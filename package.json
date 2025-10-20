@@ -1,0 +1,12 @@
+{
+  "name": "trestle-api-app",
+  "version": "1.0.0",
+  "description": "TrestleIQ API Demo Application",
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}

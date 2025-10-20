@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrestleIQ API Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .card-header h2 {
+            color: var(--gray-800);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card-header .icon {
+            font-size: 1.5rem;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border: 2px solid #60a5fa;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border: 2px solid #34d399;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 2px solid #f87171;
+            color: #991b1b;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--gray-50);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        .input-with-addon {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-addon {
+            padding: 12px 16px;
+            background: var(--gray-100);
+            border: 2px solid var(--gray-200);
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        .input-with-addon input {
+            border-radius: 0 10px 10px 0;
+            border-left: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .endpoint-display {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .endpoint-display strong {
+            color: #0c4a6e;
+        }
+
+        .endpoint-display code {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            color: #0369a1;
+        }
+
+        .results {
+            display: none;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .results-header h2 {
+            color: var(--gray-800);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--error);
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+
+        .data-section {
+            background: var(--gray-50);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .data-section h3 {
+            color: var(--gray-700);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .data-value {
+            color: var(--gray-900);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .tag-success {
+            background: var(--success);
+        }
+
+        .tag-warning {
+            background: var(--warning);
+        }
+
+        .tag-error {
+            background: var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 TrestleIQ API Dashboard</h1>
+            <p>Real-time Phone Validation & Reverse Lookup</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">⚙️</span>
+                <h2>API Configuration</h2>
+            </div>
+
+            <div class="alert alert-info">
+                <span>ℹ️</span>
+                <div>
+                    <strong>Getting Started:</strong> 
+                    You need a TrestleIQ API key to use this dashboard. 
+                    <a href="https://portal.trestleiq.com/signup" target="_blank" style="color: #2563eb; text-decoration: underline;">
+                        Sign up for free
+                    </a> 
+                    to get your API key. Your key is processed securely through our server and never exposed in the browser.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="apiKey">API Key</label>
+                <input 
+                    type="password" 
+                    id="apiKey" 
+                    placeholder="Enter your TrestleIQ API key"
+                    autocomplete="off"
+                />
+                <small>Your API key is sent securely to our server and is never exposed in the browser</small>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <div class="input-with-addon">
+                    <span class="input-addon">+1</span>
+                    <input 
+                        type="tel" 
+                        id="phoneNumber" 
+                        placeholder="2069735100" 
+                        maxlength="10"
+                        pattern="[0-9]{10}"
+                    />
+                </div>
+                <small>Enter a 10-digit US phone number without spaces or dashes</small>
+            </div>
+
+            <div class="form-group">
+                <label for="apiEndpoint">Select API Endpoint</label>
+                <select id="apiEndpoint">
+                    <option value="phone_intel">📱 Phone Validation API - Get carrier, line type, and activity score</option>
+                    <option value="reverse_phone">👤 Reverse Phone API - Get owner information and demographics</option>
+                </select>
+            </div>
+
+            <div class="endpoint-display">
+                <strong>Endpoint URL:</strong>
+                <code id="endpointUrl">https://api.trestleiq.com/3.0/phone_intel</code>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="makeApiCall()" id="apiButton">
+                    <span>🚀</span>
+                    <span>Make API Call</span>
+                </button>
+                <button class="btn btn-secondary" onclick="clearResults()">
+                    <span>🔄</span>
+                    <span>Clear</span>
+                </button>
+            </div>
+
+            <div class="code-block">
+                <pre id="curlExample">curl -X GET '/api/trestle?endpoint=phone_intel&phone=2069735100' \
+  -H 'x-api-key: YOUR_API_KEY'</pre>
+            </div>
+        </div>
+
+        <div class="card results" id="resultsPanel">
+            <div class="results-header">
+                <h2>API Response</h2>
+                <span class="status-badge" id="statusBadge"></span>
+            </div>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Update endpoint display when selection changes
+        document.getElementById('apiEndpoint').addEventListener('change', function() {
+            updateEndpointDisplay();
+        });
+
+        // Update display when phone number changes
+        document.getElementById('phoneNumber').addEventListener('input', function(e) {
+            // Only allow numbers
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            updateEndpointDisplay();
+        });
+
+        function updateEndpointDisplay() {
+            const endpoint = document.getElementById('apiEndpoint').value;
+            const phone = document.getElementById('phoneNumber').value || '2069735100';
+            
+            let url;
+            if (endpoint === 'phone_intel') {
+                url = 'https://api.trestleiq.com/3.0/phone_intel';
+            } else {
+                url = 'https://api.trestleiq.com/3.2/phone';
+            }
+            
+            document.getElementById('endpointUrl').textContent = url;
+            document.getElementById('curlExample').textContent = `curl -X GET '/api/trestle?endpoint=${endpoint}&phone=${phone}' \\
+  -H 'x-api-key: YOUR_API_KEY'`;
+        }
+
+        async function makeApiCall() {
+            const apiKey = document.getElementById('apiKey').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const endpoint = document.getElementById('apiEndpoint').value;
+            const apiButton = document.getElementById('apiButton');
+            
+            // Validation
+            if (!apiKey) {
+                showError('Please enter your API key');
+                return;
+            }
+            
+            if (!phoneNumber || phoneNumber.length !== 10) {
+                showError('Please enter a valid 10-digit phone number');
+                return;
+            }
+            
+            // Disable button during call
+            apiButton.disabled = true;
+            
+            // Show loading state
+            showLoading();
+            
+            try {
+                // Call our serverless function
+                const response = await fetch(`/api/trestle?endpoint=${endpoint}&phone=${phoneNumber}&apiKey=${apiKey}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess(data, endpoint);
+                } else {
+                    throw new Error(data.error || data.message || `API Error: ${response.status}`);
+                }
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                apiButton.disabled = false;
+            }
+        }
+
+        function showLoading() {
+            const resultsPanel = document.getElementById('resultsPanel');
+            const resultsContent = document.getElementById('resultsContent');
+            const statusBadge = document.getElementById('statusBadge');
+            
+            resultsPanel.classList.add('active');
+            statusBadge.textContent = '';
+            statusBadge.className = 'status-badge';
+            
+            resultsContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Calling TrestleIQ API...</p>
+                </div>
+            `;
+        }
+
+        function showSuccess(data, endpoint) {
+            const statusBadge = document.getElementById('statusBadge');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            statusBadge.textContent = 'SUCCESS';
+            statusBadge.className = 'status-badge status-success';
+            
+            if (endpoint === 'phone_intel') {
+                resultsContent.innerHTML = `
+                    <div class="data-section">
+                        <h3>📱 Phone Validation Results</h3>
+                        <div class="data-row">
+                            <span class="data-label">Phone Number</span>
+                            <span class="data-value">${formatPhone(data.phone_number)}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Valid Number</span>
+                            <span class="data-value">
+                                ${data.is_valid ? '<span class="tag tag-success">✓ Valid</span>' : '<span class="tag tag-error">✗ Invalid</span>'}
+                            </span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Activity Score</span>
+                            <span class="data-value">
+                                ${getActivityScoreBadge(data.activity_score)}
+                            </span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Line Type</span>
+                            <span class="data-value">${data.line_type || 'Unknown'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Carrier</span>
+                            <span class="data-value">${data.carrier || 'Unknown'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Prepaid</span>
+                            <span class="data-value">${data.is_prepaid !== undefined ? (data.is_prepaid ? 'Yes' : 'No') : 'Unknown'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Country</span>
+                            <span class="data-value">${data.country_name || 'Unknown'} (${data.country_code || 'N/A'})</span>
+                        </div>
+                    </div>
+                    
+                    <div class="data-section">
+                        <h3>📄 Raw JSON Response</h3>
+                        <div class="code-block">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Reverse Phone API
+                const owner = data.belongs_to && data.belongs_to[0];
+                const address = data.current_addresses && data.current_addresses[0];
+                
+                resultsContent.innerHTML = `
+                    <div class="data-section">
+                        <h3>📞 Phone Information</h3>
+                        <div class="data-row">
+                            <span class="data-label">Phone Number</span>
+                            <span class="data-value">${formatPhone(data.phone_number)}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Valid Number</span>
+                            <span class="data-value">
+                                ${data.is_valid ? '<span class="tag tag-success">✓ Valid</span>' : '<span class="tag tag-error">✗ Invalid</span>'}
+                            </span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Line Type</span>
+                            <span class="data-value">${data.line_type || 'Unknown'}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Carrier</span>
+                            <span class="data-value">${data.carrier || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    
+                    ${owner ? `
+                        <div class="data-section">
+                            <h3>👤 Owner Information</h3>
+                            <div class="data-row">
+                                <span class="data-label">Name</span>
+                                <span class="data-value">${owner.name || 'Unknown'}</span>
+                            </div>
+                            ${owner.age_range ? `
+                                <div class="data-row">
+                                    <span class="data-label">Age Range</span>
+                                    <span class="data-value">${owner.age_range}</span>
+                                </div>
+                            ` : ''}
+                            ${owner.gender ? `
+                                <div class="data-row">
+                                    <span class="data-label">Gender</span>
+                                    <span class="data-value">${owner.gender}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    ${address ? `
+                        <div class="data-section">
+                            <h3>📍 Current Address</h3>
+                            <div class="data-row">
+                                <span class="data-label">Address</span>
+                                <span class="data-value">
+                                    ${address.street_line_1 || ''}<br>
+                                    ${address.city || ''}, ${address.state || ''} ${address.postal_code || ''}
+                                </span>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${data.associated_people && data.associated_people.length > 0 ? `
+                        <div class="data-section">
+                            <h3>👥 Associated People</h3>
+                            ${data.associated_people.map(person => `
+                                <div class="data-row">
+                                    <span class="data-label">${person.relation || 'Associated'}</span>
+                                    <span class="data-value">${person.name || 'Unknown'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="data-section">
+                        <h3>📄 Raw JSON Response</h3>
+                        <div class="code-block">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showError(message) {
+            const resultsPanel = document.getElementById('resultsPanel');
+            const resultsContent = document.getElementById('resultsContent');
+            const statusBadge = document.getElementById('statusBadge');
+            
+            resultsPanel.classList.add('active');
+            statusBadge.textContent = 'ERROR';
+            statusBadge.className = 'status-badge status-error';
+            
+            resultsContent.innerHTML = `
+                <div class="alert alert-error">
+                    <span>❌</span>
+                    <div>
+                        <strong>Error:</strong> ${message}
+                        ${message.includes('401') || message.includes('403') ? '<br><br>Please check that your API key is correct and active.' : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatPhone(phone) {
+            if (!phone) return 'Unknown';
+            if (phone.length === 10) {
+                return `+1 (${phone.slice(0,3)}) ${phone.slice(3,6)}-${phone.slice(6)}`;
+            }
+            return phone;
+        }
+
+        function getActivityScoreBadge(score) {
+            if (score === undefined || score === null) return 'Unknown';
+            
+            let tagClass = 'tag-error';
+            let label = 'Low Activity';
+            
+            if (score >= 70) {
+                tagClass = 'tag-success';
+                label = 'High Activity';
+            } else if (score >= 40) {
+                tagClass = 'tag-warning';
+                label = 'Medium Activity';
+            }
+            
+            return `<span class="tag ${tagClass}">${score}/100 - ${label}</span>`;
+        }
+
+        function clearResults() {
+            document.getElementById('resultsPanel').classList.remove('active');
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('apiKey').value = '';
+        }
+    </script>
+</body>
+</html>
