@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrestleIQ API Dashboard</title>
+    <title>TracePointLogo</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/icon.png">
     <style>
         * {
             margin: 0;
@@ -33,7 +36,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background-color: #ffffff;
             min-height: 100vh;
             padding: 20px;
         }
@@ -61,23 +64,41 @@
             margin-bottom: 40px;
         }
 
-        .header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 40px;
+            gap: 8px;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.95;
+        .brand-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Make the logo ~4x bigger (relative to previous 48px) and responsive */
+        .brand-center img.full {
+            height: 192px;
+            width: auto;
+            display: block;
+        }
+
+        @media (max-width: 640px) {
+            .brand-center img.full {
+                height: 110px; /* scale down on small screens */
+            }
         }
 
         .card {
-            background: white;
+            background: #31459C; /* card background */
+            color: white;
             border-radius: 16px;
             padding: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
             margin-bottom: 24px;
         }
 
@@ -91,7 +112,7 @@
         }
 
         .card-header h2 {
-            color: var(--gray-800);
+            color: white;
             font-size: 1.5rem;
             font-weight: 700;
         }
@@ -110,9 +131,9 @@
         }
 
         .alert-info {
-            background: #dbeafe;
-            border: 2px solid #60a5fa;
-            color: #1e40af;
+            background: #2D9BD8; /* info field */
+            border: 2px solid #237fa3;
+            color: white;
         }
 
         .alert-success {
@@ -207,22 +228,23 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
+            background: #F9CA0B; /* Get Information button color */
+            color: #111827; /* dark text for contrast on yellow */
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
         }
 
         .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
+            background: #D81E8B; /* Clear button color */
+            color: white;
         }
 
         .btn-secondary:hover {
-            background: var(--gray-200);
+            background: #b71a73;
         }
 
         .btn:disabled {
@@ -532,14 +554,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔍 TrestleIQ API Dashboard</h1>
-            <p>Real-time Phone Validation & Reverse Lookup</p>
+            <div class="brand-center">
+                <img class="full" src="/logo.png" alt="TracePoint logo">
+            </div>
+            
         </div>
 
         <div class="card">
             <div class="card-header">
                 <span class="icon">⚙️</span>
-                <h2>API Configuration</h2>
+                <h2>Real-time Phone Validation & Reverse Lookup</h2>
             </div>
 
             <div class="alert alert-info">
@@ -557,11 +581,11 @@
                     <input 
                         type="tel" 
                         id="phoneNumber" 
-                        placeholder="(248) 346-2681 or 2483462681" 
+                        placeholder="(813) 921-2100 or 8139212100" 
                         autocomplete="tel"
                     />
                 </div>
-                <small>Enter a US phone number in any format</small>
+                <small>Enter a US phone number (e.g. 8139212100)</small>
             </div>
 
             <div class="form-group">
@@ -581,6 +605,121 @@
                     <span>🔄</span>
                     <span>Clear</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Twilio Lookup Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">📡</span>
+                <h2>Twilio Lookup</h2>
+            </div>
+
+            <div class="form-group">
+                <label for="twilioPhone">Phone Number for Twilio Lookup</label>
+                <input type="tel" id="twilioPhone" placeholder="8139212100 or (813) 921-2100" />
+                <small>Server-side proxy uses TWILIO_SID and TWILIO_TOKEN environment variables</small>
+            </div>
+
+            <div class="button-group">
+            <button class="btn btn-primary" onclick="makeTwilioCall()">📡 Run Twilio Lookup</button>
+            <button class="btn btn-secondary" onclick="runCallerName()">🗣️ Caller Name</button>
+            <button class="btn btn-secondary" onclick="runSmsPumping()">⚠️ SMS Pumping Risk</button>
+            </div>
+
+            <div class="card results" id="twilioResults" style="margin-top:16px;">
+                <div id="twilioResultsContent"></div>
+            </div>
+        </div>
+
+        <!-- Twilio Identity Match Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">🛡️</span>
+                <h2>Twilio Identity Match</h2>
+            </div>
+
+            <div class="form-group">
+                <label for="idPhone">Phone Number</label>
+                <input type="tel" id="idPhone" placeholder="8139212100 or +18139212100" />
+            </div>
+            <div class="form-group">
+                <label for="givenName">Given Name</label>
+                <input type="text" id="givenName" placeholder="First name" />
+            </div>
+            <div class="form-group">
+                <label for="familyName">Family Name</label>
+                <input type="text" id="familyName" placeholder="Last name" />
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" placeholder="City" />
+            </div>
+            <div class="form-group">
+                <label for="postal">Postal Code</label>
+                <input type="text" id="postal" placeholder="Postal code" />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="runIdentityMatch()">🛡️ Run Identity Match</button>
+            </div>
+
+            <div class="card results" id="identityResults" style="margin-top:16px;">
+                <div id="identityResultsContent"></div>
+            </div>
+        </div>
+
+        <!-- PeopleDataLabs Enrichment Card -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">👥</span>
+                <h2>PeopleDataLabs Person Enrichment</h2>
+            </div>
+
+            <div class="alert alert-info">
+                <span>ℹ️</span>
+                <div>
+                    <strong>Person Enrichment:</strong>
+                    Find detailed information about a person using phone, email, name, or social profiles.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pdlPhone">Phone Number</label>
+                <input type="tel" id="pdlPhone" placeholder="8139212100 or +18139212100" />
+            </div>
+            <div class="form-group">
+                <label for="pdlEmail">Email Address</label>
+                <input type="email" id="pdlEmail" placeholder="john.doe@example.com" />
+            </div>
+            <div class="form-group">
+                <label for="pdlFirstName">First Name</label>
+                <input type="text" id="pdlFirstName" placeholder="John" />
+            </div>
+            <div class="form-group">
+                <label for="pdlLastName">Last Name</label>
+                <input type="text" id="pdlLastName" placeholder="Doe" />
+            </div>
+            <div class="form-group">
+                <label for="pdlCompany">Company</label>
+                <input type="text" id="pdlCompany" placeholder="Google" />
+            </div>
+            <div class="form-group">
+                <label for="pdlLocation">Location</label>
+                <input type="text" id="pdlLocation" placeholder="San Francisco, CA" />
+            </div>
+            <div class="form-group">
+                <label for="pdlProfile">LinkedIn/Social Profile URL</label>
+                <input type="url" id="pdlProfile" placeholder="https://www.linkedin.com/in/johndoe" />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="runPDLEnrichment()">👥 Enrich Person Data</button>
+                <button class="btn btn-secondary" onclick="clearPDLForm()">🔄 Clear</button>
+            </div>
+
+            <div class="card results" id="pdlResults" style="margin-top:16px;">
+                <div id="pdlResultsContent"></div>
             </div>
         </div>
 
@@ -608,6 +747,34 @@
                 return `+${cleaned.slice(0,1)} (${cleaned.slice(1,4)}) ${cleaned.slice(4,7)}-${cleaned.slice(7)}`;
             }
             return phone;
+        }
+
+        async function runCallerName() {
+            const phone = document.getElementById('twilioPhone').value;
+            const phoneNumber = cleanPhoneNumber(phone);
+            if (!phoneNumber || phoneNumber.length < 10) return alert('Enter a phone');
+            const payload = { phone: phoneNumber, action: 'caller_name' };
+            document.getElementById('twilioResults').classList.add('active');
+            document.getElementById('twilioResultsContent').innerHTML = '<div class="loading"><div class="spinner"></div><p>Checking caller name...</p></div>';
+            try {
+                const res = await fetch('/api/twilio', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (res.ok) showTwilioResults(data); else document.getElementById('twilioResultsContent').innerText = data.error || data.message;
+            } catch (e) { document.getElementById('twilioResultsContent').innerText = e.message }
+        }
+
+        async function runSmsPumping() {
+            const phone = document.getElementById('twilioPhone').value;
+            const phoneNumber = cleanPhoneNumber(phone);
+            if (!phoneNumber || phoneNumber.length < 10) return alert('Enter a phone');
+            const payload = { phone: phoneNumber, action: 'sms_pumping' };
+            document.getElementById('twilioResults').classList.add('active');
+            document.getElementById('twilioResultsContent').innerHTML = '<div class="loading"><div class="spinner"></div><p>Checking SMS pumping risk...</p></div>';
+            try {
+                const res = await fetch('/api/twilio', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (res.ok) showTwilioResults(data); else document.getElementById('twilioResultsContent').innerText = data.error || data.message;
+            } catch (e) { document.getElementById('twilioResultsContent').innerText = e.message }
         }
 
         // Clean phone number for API
@@ -916,6 +1083,224 @@
             element.classList.toggle('expanded');
         }
 
+        /* Twilio Lookup client functions */
+        async function makeTwilioCall() {
+            const phoneInput = document.getElementById('twilioPhone').value;
+            const phoneNumber = cleanPhoneNumber(phoneInput);
+
+            if (!phoneNumber || phoneNumber.length !== 10) {
+                alert('Please enter a valid 10-digit phone number for Twilio Lookup');
+                return;
+            }
+
+            showTwilioLoading();
+
+            try {
+                const response = await fetch(`/api/twilio?phone=${phoneNumber}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    showTwilioResults(data);
+                } else {
+                    document.getElementById('twilioResultsContent').innerText = data.error || data.message || 'Error';
+                }
+            } catch (err) {
+                document.getElementById('twilioResultsContent').innerText = err.message;
+            }
+        }
+
+        function showTwilioLoading() {
+            const container = document.getElementById('twilioResults');
+            container.classList.add('active');
+            document.getElementById('twilioResultsContent').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Calling Twilio Lookup...</p>
+                </div>
+            `;
+        }
+
+        function showTwilioResults(data) {
+            const el = document.getElementById('twilioResultsContent');
+
+            // Caller Name response (v2): { caller_name: { caller_name: 'Name', caller_type: '...'}, phone_number: '+1...' }
+            if (data && data.caller_name && typeof data.caller_name === 'object') {
+                const cn = data.caller_name;
+                const name = cn.caller_name || null;
+                const type = cn.caller_type || 'UNDETERMINED';
+                const errorCode = cn.error_code;
+
+                let nameDisplay = name ? `<strong>${name}</strong>` : '<span class="tag tag-warning">No CNAM Data Available</span>';
+
+                el.innerHTML = `
+                    <div class="data-section">
+                        <h3>🗣️ Caller Name</h3>
+                        <div class="data-row"><span class="data-label">Phone Number</span><span class="data-value">${formatPhone(data.phone_number || data.national_format || '')}</span></div>
+                        <div class="data-row"><span class="data-label">Caller Name</span><span class="data-value">${nameDisplay}</span></div>
+                        <div class="data-row"><span class="data-label">Caller Type</span><span class="data-value">${type}</span></div>
+                        ${data.country_code ? `<div class="data-row"><span class="data-label">Country</span><span class="data-value">${data.country_code}</span></div>` : ''}
+                        ${data.national_format ? `<div class="data-row"><span class="data-label">National Format</span><span class="data-value">${data.national_format}</span></div>` : ''}
+                        ${errorCode ? `<div class="data-row"><span class="data-label">Error Code</span><span class="data-value">${errorCode}</span></div>` : ''}
+                    </div>
+                    ${!name ? `<div class="alert alert-info" style="margin-top: 16px;"><span>ℹ️</span><div>CNAM (Caller Name) data is not available for this number. This is common for mobile numbers and some carriers.</div></div>` : ''}
+                    <div class="collapsible" onclick="toggleCollapsible(this)">
+                        <div class="collapsible-header"><h3>📄 Raw JSON</h3><span class="collapsible-arrow">▼</span></div>
+                        <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                    </div>
+                `;
+                return;
+            }
+
+            // SMS Pumping Risk response (v2): { sms_pumping_risk: { carrier_risk_category: 'low' }, phone_number: '+1...' }
+            if (data && data.sms_pumping_risk && typeof data.sms_pumping_risk === 'object') {
+                const spr = data.sms_pumping_risk;
+                const riskLevel = spr.carrier_risk_category || spr.sms_pumping_risk_level || spr.risk_level || 'Unknown';
+                const numberBlocked = spr.number_blocked;
+                const numberBlockedDate = spr.number_blocked_date;
+                const numberBlockedLastDate = spr.number_blocked_last_date;
+
+                let riskBadge = 'tag';
+                if (riskLevel.toLowerCase() === 'high') riskBadge = 'tag tag-error';
+                else if (riskLevel.toLowerCase() === 'medium') riskBadge = 'tag tag-warning';
+                else if (riskLevel.toLowerCase() === 'low') riskBadge = 'tag tag-success';
+
+                el.innerHTML = `
+                    <div class="data-section">
+                        <h3>⚠️ SMS Pumping Risk</h3>
+                        <div class="data-row"><span class="data-label">Phone Number</span><span class="data-value">${formatPhone(data.phone_number || data.national_format || '')}</span></div>
+                        <div class="data-row"><span class="data-label">Carrier Risk Category</span><span class="data-value"><span class="${riskBadge}">${riskLevel.toUpperCase()}</span></span></div>
+                        <div class="data-row"><span class="data-label">Number Blocked</span><span class="data-value">${numberBlocked ? '<span class="tag tag-error">Yes</span>' : '<span class="tag tag-success">No</span>'}</span></div>
+                        ${numberBlockedDate ? `<div class="data-row"><span class="data-label">Blocked Date</span><span class="data-value">${new Date(numberBlockedDate).toLocaleString()}</span></div>` : ''}
+                        ${numberBlockedLastDate ? `<div class="data-row"><span class="data-label">Last Blocked Date</span><span class="data-value">${new Date(numberBlockedLastDate).toLocaleString()}</span></div>` : ''}
+                        ${data.country_code ? `<div class="data-row"><span class="data-label">Country</span><span class="data-value">${data.country_code}</span></div>` : ''}
+                        ${data.national_format ? `<div class="data-row"><span class="data-label">National Format</span><span class="data-value">${data.national_format}</span></div>` : ''}
+                    </div>
+                    <div class="collapsible" onclick="toggleCollapsible(this)">
+                        <div class="collapsible-header"><h3>📄 Raw JSON</h3><span class="collapsible-arrow">▼</span></div>
+                        <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Fallback: carrier/phone lookup (v1)
+            const carrierName = data.carrier && (data.carrier.name || data.carrier['name']) ? (data.carrier.name || data.carrier['name']) : (data.carrier || 'Unknown');
+            const carrierType = data.carrier && (data.carrier.type || data.carrier['type']) ? (data.carrier.type || data.carrier['type']) : (data.type || 'Unknown');
+
+            el.innerHTML = `
+                <div class="data-section">
+                    <h3>📡 Twilio Lookup Result</h3>
+                    <div class="data-row"><span class="data-label">Phone</span><span class="data-value">${formatPhone(data.phone_number || data.phoneNumber || data.phone || '')}</span></div>
+                    <div class="data-row"><span class="data-label">Carrier</span><span class="data-value">${carrierName}</span></div>
+                    <div class="data-row"><span class="data-label">Type</span><span class="data-value">${carrierType}</span></div>
+                    ${data.national_format ? `<div class="data-row"><span class="data-label">National Format</span><span class="data-value">${data.national_format}</span></div>` : ''}
+                    ${data.country_code ? `<div class="data-row"><span class="data-label">Country</span><span class="data-value">${data.country_code}</span></div>` : ''}
+                </div>
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <div class="collapsible-header"><h3>📄 Raw JSON</h3><span class="collapsible-arrow">▼</span></div>
+                    <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                </div>
+            `;
+        }
+
+        async function runIdentityMatch() {
+            const phone = document.getElementById('idPhone').value;
+            const given_name = document.getElementById('givenName').value;
+            const family_name = document.getElementById('familyName').value;
+            const city = document.getElementById('city').value;
+            const postal_code = document.getElementById('postal').value;
+
+            const phoneNumber = cleanPhoneNumber(phone);
+            if (!phoneNumber || phoneNumber.length < 10) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            showIdentityLoading();
+
+            const payload = {
+                phone: phoneNumber,
+                given_name: given_name || undefined,
+                family_name: family_name || undefined,
+                city: city || undefined,
+                postal_code: postal_code || undefined
+            };
+
+            try {
+                const response = await fetch('/api/twilio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showIdentityResults(data);
+                } else {
+                    document.getElementById('identityResultsContent').innerText = data.error || data.message || 'Error';
+                }
+            } catch (err) {
+                document.getElementById('identityResultsContent').innerText = err.message;
+            }
+        }
+
+        function showIdentityLoading() {
+            const el = document.getElementById('identityResults');
+            el.classList.add('active');
+            document.getElementById('identityResultsContent').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Running Identity Match...</p>
+                </div>
+            `;
+        }
+
+        function showIdentityResults(data) {
+            const el = document.getElementById('identityResultsContent');
+
+            // Identity Match v2 response: { identity_match: { first_name_match: 'match', last_name_match: 'no_match', ... }, phone_number: '+1...' }
+            if (data && data.identity_match && typeof data.identity_match === 'object') {
+                const im = data.identity_match;
+
+                const getMatchBadge = (matchValue) => {
+                    if (!matchValue) return '<span class="tag">No Data</span>';
+                    if (matchValue === 'match') return '<span class="tag tag-success">✓ Match</span>';
+                    if (matchValue === 'no_match') return '<span class="tag tag-error">✗ No Match</span>';
+                    return `<span class="tag">${matchValue}</span>`;
+                };
+
+                el.innerHTML = `
+                    <div class="data-section">
+                        <h3>🛡️ Identity Match Result</h3>
+                        <div class="data-row"><span class="data-label">Phone Number</span><span class="data-value">${formatPhone(data.phone_number || data.national_format || '')}</span></div>
+                        ${im.first_name_match ? `<div class="data-row"><span class="data-label">First Name</span><span class="data-value">${getMatchBadge(im.first_name_match)}</span></div>` : ''}
+                        ${im.last_name_match ? `<div class="data-row"><span class="data-label">Last Name</span><span class="data-value">${getMatchBadge(im.last_name_match)}</span></div>` : ''}
+                        ${im.address_match ? `<div class="data-row"><span class="data-label">Address</span><span class="data-value">${getMatchBadge(im.address_match)}</span></div>` : ''}
+                        ${im.city_match ? `<div class="data-row"><span class="data-label">City</span><span class="data-value">${getMatchBadge(im.city_match)}</span></div>` : ''}
+                        ${im.state_match ? `<div class="data-row"><span class="data-label">State</span><span class="data-value">${getMatchBadge(im.state_match)}</span></div>` : ''}
+                        ${im.postal_code_match ? `<div class="data-row"><span class="data-label">Postal Code</span><span class="data-value">${getMatchBadge(im.postal_code_match)}</span></div>` : ''}
+                        ${im.national_id_match ? `<div class="data-row"><span class="data-label">National ID</span><span class="data-value">${getMatchBadge(im.national_id_match)}</span></div>` : ''}
+                    </div>
+                    <div class="collapsible" onclick="toggleCollapsible(this)">
+                        <div class="collapsible-header"><h3>📄 Raw JSON</h3><span class="collapsible-arrow">▼</span></div>
+                        <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                    </div>
+                `;
+            } else {
+                // Fallback for unexpected format
+                el.innerHTML = `
+                    <div class="data-section">
+                        <h3>🛡️ Identity Match Result</h3>
+                        <div class="data-row"><span class="data-label">Status</span><span class="data-value">${data.status || data.result || 'Unknown'}</span></div>
+                        <div class="data-row"><span class="data-label">Match Score</span><span class="data-value">${data.match && data.match.confidence ? data.match.confidence : (data.confidence || 'N/A')}</span></div>
+                    </div>
+                    <div class="collapsible" onclick="toggleCollapsible(this)">
+                        <div class="collapsible-header"><h3>📄 Raw JSON</h3><span class="collapsible-arrow">▼</span></div>
+                        <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                    </div>
+                `;
+            }
+        }
+
         function showError(message) {
             const resultsPanel = document.getElementById('resultsPanel');
             const resultsContent = document.getElementById('resultsContent');
@@ -956,6 +1341,218 @@
         function clearResults() {
             document.getElementById('resultsPanel').classList.remove('active');
             document.getElementById('phoneNumber').value = '';
+        }
+
+        /* PeopleDataLabs Enrichment Functions */
+        async function runPDLEnrichment() {
+            const phone = document.getElementById('pdlPhone').value.trim();
+            const email = document.getElementById('pdlEmail').value.trim();
+            const firstName = document.getElementById('pdlFirstName').value.trim();
+            const lastName = document.getElementById('pdlLastName').value.trim();
+            const company = document.getElementById('pdlCompany').value.trim();
+            const location = document.getElementById('pdlLocation').value.trim();
+            const profile = document.getElementById('pdlProfile').value.trim();
+
+            // Validate at least one parameter
+            if (!phone && !email && !firstName && !company && !profile) {
+                alert('Please provide at least one search parameter (phone, email, name, company, or profile)');
+                return;
+            }
+
+            showPDLLoading();
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (phone) params.append('phone', phone);
+            if (email) params.append('email', email);
+            if (firstName) params.append('first_name', firstName);
+            if (lastName) params.append('last_name', lastName);
+            if (company) params.append('company', company);
+            if (location) params.append('location', location);
+            if (profile) params.append('profile', profile);
+
+            try {
+                const response = await fetch(`/api/peopledatalabs?${params.toString()}`);
+                const data = await response.json();
+
+                if (response.ok && data.status === 200) {
+                    showPDLResults(data);
+                } else {
+                    document.getElementById('pdlResultsContent').innerHTML = `
+                        <div class="alert alert-error">
+                            <span>❌</span>
+                            <div><strong>Error:</strong> ${data.error || data.message || 'No match found'}</div>
+                        </div>
+                        <div class="collapsible" onclick="toggleCollapsible(this)">
+                            <div class="collapsible-header"><h3>📄 Raw Response</h3><span class="collapsible-arrow">▼</span></div>
+                            <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(data, null, 2)}</pre></div></div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                document.getElementById('pdlResultsContent').innerHTML = `
+                    <div class="alert alert-error">
+                        <span>❌</span>
+                        <div><strong>Error:</strong> ${err.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function showPDLLoading() {
+            const el = document.getElementById('pdlResults');
+            el.classList.add('active');
+            document.getElementById('pdlResultsContent').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Enriching person data...</p>
+                </div>
+            `;
+        }
+
+        function showPDLResults(response) {
+            const el = document.getElementById('pdlResultsContent');
+            const person = response.data;
+
+            if (!person) {
+                el.innerHTML = `<div class="alert alert-error"><span>❌</span><div>No person data found</div></div>`;
+                return;
+            }
+
+            // Extract key information
+            const fullName = person.full_name || 'Unknown';
+            const likelihood = response.likelihood || 0;
+            const emails = person.emails || [];
+            const phones = person.phone_numbers || [];
+            const locations = person.locations || [];
+            const experience = person.experience || [];
+            const education = person.education || [];
+            const profiles = person.profiles || [];
+
+            let likelihoodBadge = 'tag';
+            if (likelihood >= 8) likelihoodBadge = 'tag tag-success';
+            else if (likelihood >= 5) likelihoodBadge = 'tag tag-warning';
+            else likelihoodBadge = 'tag tag-error';
+
+            el.innerHTML = `
+                <div class="data-section">
+                    <h3>👤 Personal Information</h3>
+                    <div class="data-row"><span class="data-label">Full Name</span><span class="data-value"><strong>${fullName}</strong></span></div>
+                    <div class="data-row"><span class="data-label">Match Likelihood</span><span class="data-value"><span class="${likelihoodBadge}">${likelihood}/10</span></span></div>
+                    ${person.birth_year ? `<div class="data-row"><span class="data-label">Birth Year</span><span class="data-value">${person.birth_year}</span></div>` : ''}
+                    ${person.gender ? `<div class="data-row"><span class="data-label">Gender</span><span class="data-value">${person.gender}</span></div>` : ''}
+                    ${person.linkedin_url ? `<div class="data-row"><span class="data-label">LinkedIn</span><span class="data-value"><a href="${person.linkedin_url}" target="_blank">${person.linkedin_url}</a></span></div>` : ''}
+                    ${person.facebook_url ? `<div class="data-row"><span class="data-label">Facebook</span><span class="data-value"><a href="${person.facebook_url}" target="_blank">${person.facebook_url}</a></span></div>` : ''}
+                </div>
+
+                ${emails.length > 0 ? `
+                    <div class="data-section">
+                        <h3>✉️ Email Addresses (${emails.length})</h3>
+                        <div class="email-list">
+                            ${emails.slice(0, 5).map(e => `
+                                <span class="email-item">
+                                    ${e.address}
+                                    ${e.type ? `<span class="tag tag-info">${e.type}</span>` : ''}
+                                    ${e.first_seen ? `<small style="color: var(--gray-500);"> (seen ${e.first_seen})</small>` : ''}
+                                </span>
+                            `).join('')}
+                            ${emails.length > 5 ? `<small style="color: var(--gray-500);">...and ${emails.length - 5} more</small>` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${phones.length > 0 ? `
+                    <div class="data-section">
+                        <h3>📞 Phone Numbers (${phones.length})</h3>
+                        <div class="phone-list">
+                            ${phones.slice(0, 5).map(p => `
+                                <span class="tag tag-info">
+                                    ${formatPhone(p.number || p)}
+                                    ${p.type ? `(${p.type})` : ''}
+                                </span>
+                            `).join('')}
+                            ${phones.length > 5 ? `<br><small style="color: var(--gray-500);">...and ${phones.length - 5} more</small>` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${locations.length > 0 ? `
+                    <div class="data-section">
+                        <h3>📍 Locations (${locations.length})</h3>
+                        ${locations.slice(0, 3).map(loc => `
+                            <div class="address-item">
+                                <div class="address-line">
+                                    ${loc.street_address || ''}
+                                </div>
+                                <div class="address-line">
+                                    ${loc.locality || ''}, ${loc.region || ''} ${loc.postal_code || ''} ${loc.country || ''}
+                                </div>
+                                ${loc.last_seen ? `<div class="address-meta"><span>Last seen: ${loc.last_seen}</span></div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${experience.length > 0 ? `
+                    <div class="data-section">
+                        <h3>💼 Work Experience (${experience.length})</h3>
+                        ${experience.slice(0, 3).map(exp => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                <div style="font-weight: 700; color: var(--gray-800);">${exp.title?.name || exp.company?.name || 'Unknown'}</div>
+                                ${exp.company?.name ? `<div style="color: var(--gray-600);">${exp.company.name}</div>` : ''}
+                                ${exp.start_date || exp.end_date ? `
+                                    <div style="color: var(--gray-500); font-size: 0.875rem; margin-top: 4px;">
+                                        ${exp.start_date || 'Unknown'} - ${exp.end_date || 'Present'}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                        ${experience.length > 3 ? `<small style="color: var(--gray-500);">...and ${experience.length - 3} more positions</small>` : ''}
+                    </div>
+                ` : ''}
+
+                ${education.length > 0 ? `
+                    <div class="data-section">
+                        <h3>🎓 Education (${education.length})</h3>
+                        ${education.slice(0, 2).map(edu => `
+                            <div style="margin-bottom: 12px;">
+                                <div style="font-weight: 700; color: var(--gray-800);">${edu.school?.name || 'Unknown'}</div>
+                                ${edu.degrees ? `<div style="color: var(--gray-600);">${edu.degrees.join(', ')}</div>` : ''}
+                                ${edu.end_date ? `<div style="color: var(--gray-500); font-size: 0.875rem;">Graduated: ${edu.end_date}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${profiles.length > 0 ? `
+                    <div class="data-section">
+                        <h3>🌐 Social Profiles (${profiles.length})</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${profiles.slice(0, 10).map(prof => `
+                                <a href="${prof.url}" target="_blank" class="tag tag-info" style="text-decoration: none;">
+                                    ${prof.network || 'Profile'}
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <div class="collapsible-header"><h3>📄 Raw JSON Response</h3><span class="collapsible-arrow">▼</span></div>
+                    <div class="collapsible-content"><div class="code-block"><pre>${JSON.stringify(response, null, 2)}</pre></div></div>
+                </div>
+            `;
+        }
+
+        function clearPDLForm() {
+            document.getElementById('pdlPhone').value = '';
+            document.getElementById('pdlEmail').value = '';
+            document.getElementById('pdlFirstName').value = '';
+            document.getElementById('pdlLastName').value = '';
+            document.getElementById('pdlCompany').value = '';
+            document.getElementById('pdlLocation').value = '';
+            document.getElementById('pdlProfile').value = '';
+            document.getElementById('pdlResults').classList.remove('active');
         }
 
         // Allow Enter key to submit

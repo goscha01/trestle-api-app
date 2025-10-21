@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "TrestleIQ API Demo Application",
   "scripts": {
-    "start": "vercel dev",
+    "start": "cross-env PORT=3000 vercel dev",
     "deploy": "vercel --prod"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^10.0.0",
     "vercel": "^32.0.0"
-    
   }
 }

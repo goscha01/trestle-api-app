@@ -11,19 +11,32 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   try {
-    const { endpoint, phone, apiKey } = req.query;
+    const { endpoint } = req.query;
+
+    // Prefer server-side environment variable for the API key to avoid exposing it to clients
+    const apiKeyFromEnv = process.env.TRESTLE_API_KEY;
+    const apiKey = (req.query.apiKey && String(req.query.apiKey)) || apiKeyFromEnv;
+
+    // Normalize and validate phone (allow digits only)
+    const rawPhone = req.query.phone ? String(req.query.phone) : '';
+    const phone = rawPhone.replace(/\D/g, '');
 
     // Validate inputs
-    if (!phone || !apiKey) {
-      return res.status(400).json({ 
-        error: 'Missing required parameters: phone and apiKey' 
+    if (!phone) {
+      console.error('trestle proxy - Missing phone parameter');
+      return res.status(400).json({ error: 'Missing required parameter: phone' });
+    }
+
+    if (!apiKey) {
+      console.error('trestle proxy - Missing API key. TRESTLE_API_KEY env var:', apiKeyFromEnv ? 'SET' : 'NOT SET');
+      return res.status(400).json({
+        error: 'Missing API key. Add TRESTLE_API_KEY to your .env file.',
+        hint: 'Get your API key from https://dashboard.trestleiq.com/'
       });
     }
 
     if (phone.length !== 10) {
-      return res.status(400).json({ 
-        error: 'Phone number must be 10 digits' 
-      });
+      return res.status(400).json({ error: 'Phone number must be 10 digits (numbers only).' });
     }
 
     // Determine the correct TrestleIQ API endpoint
@@ -33,12 +46,11 @@ export default async function handler(req, res) {
     } else if (endpoint === 'reverse_phone') {
       apiUrl = `https://api.trestleiq.com/3.2/phone?phone=${phone}`;
     } else {
-      return res.status(400).json({ 
-        error: 'Invalid endpoint. Use "phone_intel" or "reverse_phone"' 
-      });
+      return res.status(400).json({ error: 'Invalid endpoint. Use "phone_intel" or "reverse_phone"' });
     }
 
     // Make the request to TrestleIQ API
+    console.log('trestle proxy - calling:', apiUrl);
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
@@ -48,15 +60,12 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+    console.log('trestle proxy - response:', { status: response.status, data: JSON.stringify(data).slice(0, 200) });
 
     // Return the response with the same status code
     res.status(response.status).json(data);
-
   } catch (error) {
     console.error('API Error:', error);
-    res.status(500).json({ 
-      error: 'Internal server error', 
-      message: error.message 
-    });
+    res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }
