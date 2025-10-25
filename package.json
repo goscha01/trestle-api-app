@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "TrestleIQ API Demo Application",
   "scripts": {
-    "start": "cross-env PORT=3000 vercel dev",
+    "start": "vercel dev --listen 3000",
     "deploy": "vercel --prod"
   },
   "devDependencies": {

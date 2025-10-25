@@ -529,26 +529,124 @@
             word-wrap: break-word;
         }
 
+        /* Tab Styles */
+        .tab-container {
+            margin-top: 24px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 24px;
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-button .tab-icon {
+            font-size: 1.1rem;
+        }
+
+        .tab-button .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .tab-button .status-dot.loading {
+            background: var(--warning);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .tab-button .status-dot.success {
+            background: var(--success);
+        }
+
+        .tab-button .status-dot.error {
+            background: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeInTab 0.3s ease-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeInTab {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .button-group {
                 flex-direction: column;
             }
-            
+
             .card {
                 padding: 24px;
             }
-            
+
             .data-row {
                 flex-direction: column;
                 gap: 4px;
             }
-            
+
             .data-value {
                 text-align: left;
+            }
+
+            .tab-nav {
+                gap: 4px;
+            }
+
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 0.875rem;
             }
         }
     </style>
@@ -562,179 +660,2198 @@
             
         </div>
 
+        <!-- Unified Search Card -->
         <div class="card">
             <div class="card-header">
-                <span class="icon">⚙️</span>
-                <h2>Real-time Phone Validation & Reverse Lookup</h2>
+                <span class="icon">🔍</span>
+                <h2>Unified Person & Phone Lookup</h2>
             </div>
 
             <div class="alert alert-info">
                 <span>ℹ️</span>
                 <div>
-                    <strong>Welcome!</strong> 
-                    Enter a phone number below to get detailed information about the owner, carrier, and validation status.
+                    <strong>Welcome!</strong>
+                    Enter search criteria below. Results from all applicable services will be shown in separate tabs.
                 </div>
             </div>
 
+            <!-- Phone Number -->
             <div class="form-group">
                 <label for="phoneNumber">Phone Number</label>
                 <div class="input-with-addon">
                     <span class="input-addon">+1</span>
-                    <input 
-                        type="tel" 
-                        id="phoneNumber" 
-                        placeholder="(813) 921-2100 or 8139212100" 
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        placeholder="(813) 921-2100 or 8139212100"
                         autocomplete="tel"
                     />
                 </div>
                 <small>Enter a US phone number (e.g. 8139212100)</small>
             </div>
 
+            <!-- Email -->
             <div class="form-group">
-                <label for="apiEndpoint">Select API Endpoint</label>
-                <select id="apiEndpoint">
-                    <option value="phone_intel">📱 Phone Validation API - Get carrier, line type, and activity score</option>
-                    <option value="reverse_phone">👤 Reverse Phone API - Get owner information and demographics</option>
-                </select>
+                <label for="emailAddress">Email Address</label>
+                <input type="email" id="emailAddress" placeholder="john.doe@example.com" />
+            </div>
+
+            <!-- Name Fields -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" placeholder="John" />
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" placeholder="Doe" />
+                </div>
+            </div>
+
+            <!-- Location Fields -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" placeholder="San Francisco" />
+                </div>
+                <div class="form-group">
+                    <label for="postalCode">Postal Code</label>
+                    <input type="text" id="postalCode" placeholder="94102" />
+                </div>
+            </div>
+
+            <!-- Company & Full Location -->
+            <div class="form-group">
+                <label for="company">Company</label>
+                <input type="text" id="company" placeholder="Google" />
+            </div>
+
+            <div class="form-group">
+                <label for="location">Full Location (for PDL)</label>
+                <input type="text" id="location" placeholder="San Francisco, CA" />
+            </div>
+
+            <!-- Profile URL -->
+            <div class="form-group">
+                <label for="profileUrl">LinkedIn/Social Profile URL</label>
+                <input type="url" id="profileUrl" placeholder="https://www.linkedin.com/in/johndoe" />
             </div>
 
             <div class="button-group">
-                <button class="btn btn-primary" onclick="makeApiCall()" id="apiButton">
+                <button class="btn btn-primary" onclick="runUnifiedSearch()" id="searchButton">
                     <span>🚀</span>
-                    <span>Get Information</span>
+                    <span>Search All Services</span>
                 </button>
-                <button class="btn btn-secondary" onclick="clearResults()">
+                <button class="btn btn-secondary" onclick="clearUnifiedForm()">
                     <span>🔄</span>
                     <span>Clear</span>
                 </button>
             </div>
         </div>
 
-        <!-- Twilio Lookup Card -->
-        <div class="card">
-            <div class="card-header">
-                <span class="icon">📡</span>
-                <h2>Twilio Lookup</h2>
+        <!-- Unified Results Card with Tabs -->
+        <div class="card results" id="unifiedResults">
+            <div class="results-header">
+                <h2>Search Results</h2>
             </div>
 
-            <div class="form-group">
-                <label for="twilioPhone">Phone Number for Twilio Lookup</label>
-                <input type="tel" id="twilioPhone" placeholder="8139212100 or (813) 921-2100" />
-                <small>Server-side proxy uses TWILIO_SID and TWILIO_TOKEN environment variables</small>
-            </div>
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab-nav" id="tabNav">
+                    <!-- Tabs will be dynamically added here -->
+                </div>
 
-            <div class="button-group">
-            <button class="btn btn-primary" onclick="makeTwilioCall()">📡 Run Twilio Lookup</button>
-            <button class="btn btn-secondary" onclick="runCallerName()">🗣️ Caller Name</button>
-            <button class="btn btn-secondary" onclick="runSmsPumping()">⚠️ SMS Pumping Risk</button>
-            </div>
-
-            <div class="card results" id="twilioResults" style="margin-top:16px;">
-                <div id="twilioResultsContent"></div>
-            </div>
-        </div>
-
-        <!-- Twilio Identity Match Card -->
-        <div class="card">
-            <div class="card-header">
-                <span class="icon">🛡️</span>
-                <h2>Twilio Identity Match</h2>
-            </div>
-
-            <div class="form-group">
-                <label for="idPhone">Phone Number</label>
-                <input type="tel" id="idPhone" placeholder="8139212100 or +18139212100" />
-            </div>
-            <div class="form-group">
-                <label for="givenName">Given Name</label>
-                <input type="text" id="givenName" placeholder="First name" />
-            </div>
-            <div class="form-group">
-                <label for="familyName">Family Name</label>
-                <input type="text" id="familyName" placeholder="Last name" />
-            </div>
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" placeholder="City" />
-            </div>
-            <div class="form-group">
-                <label for="postal">Postal Code</label>
-                <input type="text" id="postal" placeholder="Postal code" />
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="runIdentityMatch()">🛡️ Run Identity Match</button>
-            </div>
-
-            <div class="card results" id="identityResults" style="margin-top:16px;">
-                <div id="identityResultsContent"></div>
-            </div>
-        </div>
-
-        <!-- PeopleDataLabs Enrichment Card -->
-        <div class="card">
-            <div class="card-header">
-                <span class="icon">👥</span>
-                <h2>PeopleDataLabs Person Enrichment</h2>
-            </div>
-
-            <div class="alert alert-info">
-                <span>ℹ️</span>
-                <div>
-                    <strong>Person Enrichment:</strong>
-                    Find detailed information about a person using phone, email, name, or social profiles.
+                <div class="tab-content" id="tabContent">
+                    <!-- Tab content will be dynamically added here -->
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="pdlPhone">Phone Number</label>
-                <input type="tel" id="pdlPhone" placeholder="8139212100 or +18139212100" />
-            </div>
-            <div class="form-group">
-                <label for="pdlEmail">Email Address</label>
-                <input type="email" id="pdlEmail" placeholder="john.doe@example.com" />
-            </div>
-            <div class="form-group">
-                <label for="pdlFirstName">First Name</label>
-                <input type="text" id="pdlFirstName" placeholder="John" />
-            </div>
-            <div class="form-group">
-                <label for="pdlLastName">Last Name</label>
-                <input type="text" id="pdlLastName" placeholder="Doe" />
-            </div>
-            <div class="form-group">
-                <label for="pdlCompany">Company</label>
-                <input type="text" id="pdlCompany" placeholder="Google" />
-            </div>
-            <div class="form-group">
-                <label for="pdlLocation">Location</label>
-                <input type="text" id="pdlLocation" placeholder="San Francisco, CA" />
-            </div>
-            <div class="form-group">
-                <label for="pdlProfile">LinkedIn/Social Profile URL</label>
-                <input type="url" id="pdlProfile" placeholder="https://www.linkedin.com/in/johndoe" />
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="runPDLEnrichment()">👥 Enrich Person Data</button>
-                <button class="btn btn-secondary" onclick="clearPDLForm()">🔄 Clear</button>
-            </div>
-
-            <div class="card results" id="pdlResults" style="margin-top:16px;">
-                <div id="pdlResultsContent"></div>
-            </div>
-        </div>
-
-        <div class="card results" id="resultsPanel">
-            <div class="results-header">
-                <h2>API Response</h2>
-                <span class="status-badge" id="statusBadge"></span>
-            </div>
-            <div id="resultsContent"></div>
         </div>
     </div>
 
     <script>
+        // ========== UNIFIED SEARCH SYSTEM ==========
+
+        let activeTabs = [];
+        let tabResults = {};
+
+        function runUnifiedSearch() {
+            const phone = cleanPhoneNumber(document.getElementById('phoneNumber').value);
+            const email = document.getElementById('emailAddress').value.trim();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const postalCode = document.getElementById('postalCode').value.trim();
+            const company = document.getElementById('company').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const profileUrl = document.getElementById('profileUrl').value.trim();
+
+            // Validate at least one field
+            if (!phone && !email && !firstName && !lastName && !company && !profileUrl) {
+                alert('Please enter at least one search parameter');
+                return;
+            }
+
+            // Reset tabs and results
+            activeTabs = [];
+            tabResults = {};
+
+            // Show results panel
+            document.getElementById('unifiedResults').classList.add('active');
+
+            // Initialize tabs based on available data
+            if (phone && phone.length >= 10) {
+                createTab('trestle-phone-intel', '📱 Trestle Phone Intel', 'loading');
+                createTab('trestle-reverse', '👤 Trestle Reverse Phone', 'loading');
+                createTab('twilio-lookup', '📡 Twilio Lookup', 'loading');
+                createTab('twilio-caller-name', '🗣️ Twilio Caller Name', 'loading');
+                createTab('twilio-sms-pumping', '⚠️ Twilio SMS Pumping', 'loading');
+
+                if (firstName || lastName || city || postalCode) {
+                    createTab('twilio-identity', '🛡️ Twilio Identity Match', 'loading');
+                }
+            }
+
+            if (phone || email || firstName || lastName || company || profileUrl || location) {
+                createTab('peopledatalabs', '👥 PeopleDataLabs', 'loading');
+                createTab('peopledatalabs-search', '🔎 PDL Search', 'loading');
+                createTab('peopledatalabs-identify', '🆔 PDL Identify', 'loading');
+            }
+
+            // Enformion tabs - need at least 2 criteria for person search
+            const hasEnformionName = firstName || lastName;
+            const hasEnformionContact = phone || email;
+            const hasEnformionAddress = city || postalCode;
+            const enformionCriteriaCount = [hasEnformionName, hasEnformionContact, hasEnformionAddress].filter(Boolean).length;
+
+            if (enformionCriteriaCount >= 2) {
+                createTab('enformion-person-search', '🔍 Enformion Search', 'loading');
+            }
+
+            if (phone) {
+                createTab('enformion-reverse-phone', '📱 Enformion Reverse', 'loading');
+            }
+
+            // Activate first tab
+            if (activeTabs.length > 0) {
+                switchTab(activeTabs[0]);
+            }
+
+            // Run all API calls in parallel
+            const promises = [];
+
+            if (phone && phone.length >= 10) {
+                // Trestle Phone Intel
+                promises.push(
+                    fetch(`/api/trestle?endpoint=phone_intel&phone=${phone}`)
+                        .then(res => res.json())
+                        .then(data => updateTabContent('trestle-phone-intel', renderTrestlePhoneIntel(data), 'success'))
+                        .catch(err => updateTabContent('trestle-phone-intel', renderError(err.message), 'error'))
+                );
+
+                // Trestle Reverse Phone
+                promises.push(
+                    fetch(`/api/trestle?endpoint=reverse_phone&phone=${phone}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            tabResults['trestle-reverse'] = data; // Store raw data
+                            updateTabContent('trestle-reverse', renderTrestleReverse(data), 'success');
+                        })
+                        .catch(err => updateTabContent('trestle-reverse', renderError(err.message), 'error'))
+                );
+
+                // Twilio Lookup
+                promises.push(
+                    fetch(`/api/twilio?phone=${phone}`)
+                        .then(res => res.json())
+                        .then(data => updateTabContent('twilio-lookup', renderTwilioLookup(data), 'success'))
+                        .catch(err => updateTabContent('twilio-lookup', renderError(err.message), 'error'))
+                );
+
+                // Twilio Caller Name
+                promises.push(
+                    fetch('/api/twilio', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone, action: 'caller_name' })
+                    })
+                        .then(res => res.json())
+                        .then(data => updateTabContent('twilio-caller-name', renderTwilioCallerName(data), 'success'))
+                        .catch(err => updateTabContent('twilio-caller-name', renderError(err.message), 'error'))
+                );
+
+                // Twilio SMS Pumping
+                promises.push(
+                    fetch('/api/twilio', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone, action: 'sms_pumping' })
+                    })
+                        .then(res => res.json())
+                        .then(data => updateTabContent('twilio-sms-pumping', renderTwilioSmsPumping(data), 'success'))
+                        .catch(err => updateTabContent('twilio-sms-pumping', renderError(err.message), 'error'))
+                );
+
+                // Twilio Identity Match (if name/location provided)
+                if (firstName || lastName || city || postalCode) {
+                    const payload = { phone };
+                    if (firstName) payload.given_name = firstName;
+                    if (lastName) payload.family_name = lastName;
+                    if (city) payload.city = city;
+                    if (postalCode) payload.postal_code = postalCode;
+
+                    promises.push(
+                        fetch('/api/twilio', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                            .then(res => res.json())
+                            .then(data => updateTabContent('twilio-identity', renderTwilioIdentity(data), 'success'))
+                            .catch(err => updateTabContent('twilio-identity', renderError(err.message), 'error'))
+                    );
+                }
+            }
+
+                // PeopleDataLabs (Enrich, Search, Identify)
+            if (phone || email || firstName || lastName || company || profileUrl || location) {
+                const params = new URLSearchParams();
+                if (phone) params.append('phone', phone);
+                if (email) params.append('email', email);
+                if (firstName) params.append('first_name', firstName);
+                if (lastName) params.append('last_name', lastName);
+                if (company) params.append('company', company);
+                if (location) params.append('location', location);
+                if (profileUrl) params.append('profile', profileUrl);
+
+                // Enrich (existing)
+                promises.push(
+                    fetch(`/api/peopledatalabs?endpoint=enrich&${params.toString()}`)
+                        .then(async res => {
+                            const data = await res.json().catch(() => null);
+                            if (res.ok && data && data.status === 200) {
+                                tabResults['peopledatalabs'] = data; // Store raw data
+                                updateTabContent('peopledatalabs', renderPDL(data), 'success');
+                            } else {
+                                const message = (data && (data.error && (data.error.message || data.error)) ) || (data && data.message) || 'No match found';
+                                updateTabContent('peopledatalabs', renderError(message), 'error');
+                            }
+                        })
+                        .catch(err => updateTabContent('peopledatalabs', renderError(err.message), 'error'))
+                );
+
+                // Person Search
+                promises.push(
+                    fetch(`/api/peopledatalabs?endpoint=search&${params.toString()}`)
+                        .then(async res => {
+                            const data = await res.json().catch(() => null);
+                            if (res.ok && data) {
+                                if (data.status === 200) {
+                                    updateTabContent('peopledatalabs-search', renderPDLSearch(data), 'success');
+                                } else if (data.status === 404) {
+                                    // No records found - show informative message
+                                    const message = `
+                                        <div class="alert alert-info">
+                                            <span>ℹ️</span>
+                                            <div>
+                                                <strong>No Search Results Found</strong><br>
+                                                The Person Search API couldn't find any matching records for the provided search criteria.
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('peopledatalabs-search', message, 'warning');
+                                } else if (data.status === 402) {
+                                    // Quota exceeded
+                                    const errorMsg = (data.error && data.error.message) || 'API quota exceeded';
+                                    const message = `
+                                        <div class="alert alert-error">
+                                            <span>⚠️</span>
+                                            <div>
+                                                <strong>API Quota Exceeded</strong><br>
+                                                ${errorMsg}
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('peopledatalabs-search', message, 'error');
+                                } else {
+                                    const message = (data.error && (data.error.message || data.error)) || data.message || 'Unknown error';
+                                    updateTabContent('peopledatalabs-search', renderError(message), 'error');
+                                }
+                            } else {
+                                updateTabContent('peopledatalabs-search', renderError('Failed to parse response'), 'error');
+                            }
+                        })
+                        .catch(err => updateTabContent('peopledatalabs-search', renderError(err.message), 'error'))
+                );
+
+                // Person Identify
+                promises.push(
+                    fetch(`/api/peopledatalabs?endpoint=identify&${params.toString()}`)
+                        .then(async res => {
+                            const data = await res.json().catch(() => null);
+                            if (res.ok && data) {
+                                if (data.status === 200) {
+                                    updateTabContent('peopledatalabs-identify', renderPDLIdentify(data), 'success');
+                                } else if (data.status === 404) {
+                                    // No records found - show informative message
+                                    const message = `
+                                        <div class="alert alert-info">
+                                            <span>ℹ️</span>
+                                            <div>
+                                                <strong>No Identity Match Found</strong><br>
+                                                The Person Identify API couldn't find a matching record for the provided information.
+                                                This endpoint is used to find PDL IDs based on personal identifiers.
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('peopledatalabs-identify', message, 'warning');
+                                } else if (data.status === 402) {
+                                    // Quota exceeded
+                                    const errorMsg = (data.error && data.error.message) || 'API quota exceeded';
+                                    const message = `
+                                        <div class="alert alert-error">
+                                            <span>⚠️</span>
+                                            <div>
+                                                <strong>API Quota Exceeded</strong><br>
+                                                ${errorMsg}
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('peopledatalabs-identify', message, 'error');
+                                } else {
+                                    const message = (data.error && (data.error.message || data.error)) || data.message || 'Unknown error';
+                                    updateTabContent('peopledatalabs-identify', renderError(message), 'error');
+                                }
+                            } else {
+                                updateTabContent('peopledatalabs-identify', renderError('Failed to parse response'), 'error');
+                            }
+                        })
+                        .catch(err => updateTabContent('peopledatalabs-identify', renderError(err.message), 'error'))
+                );
+            }
+
+            // Enformion API calls - only call if we have enough criteria
+            const enformionHasName = firstName || lastName;
+            const enformionHasContact = phone || email;
+            const enformionHasAddress = city || postalCode;
+            const enformionCriteria = [enformionHasName, enformionHasContact, enformionHasAddress].filter(Boolean).length;
+
+            if (enformionCriteria >= 2) {
+                // Build params for Enformion calls
+                const enformionParams = new URLSearchParams();
+                if (phone) enformionParams.append('phone', phone);
+                if (email) enformionParams.append('email', email);
+                if (firstName) enformionParams.append('firstName', firstName);
+                if (lastName) enformionParams.append('lastName', lastName);
+                if (city) enformionParams.append('city', city);
+                if (postalCode) enformionParams.append('zip', postalCode);
+
+                // Contact Enrichment - DISABLED: This endpoint returns HTML errors (not a valid Enformion endpoint)
+                // The person-search endpoint provides similar enrichment functionality
+                /*
+                promises.push(
+                    fetch(`/api/enformion?endpoint=contact-enrichment&${enformionParams.toString()}`)
+                        .then(async res => {
+                            const data = await res.json().catch(() => null);
+                            console.log('Enformion enrichment response:', data);
+                            if (res.ok && data) {
+                                if (data.status === 200 && data.data) {
+                                    updateTabContent('enformion-enrichment', renderEnformionEnrichment(data.data), 'success');
+                                } else if (data.status === 404) {
+                                    const message = `
+                                        <div class="alert alert-info">
+                                            <span>ℹ️</span>
+                                            <div>
+                                                <strong>No Contact Match Found</strong><br>
+                                                Enformion couldn't find a matching person record. Try adding more search criteria.
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('enformion-enrichment', message, 'warning');
+                                } else if (data.error) {
+                                    // Show error with hint if available
+                                    const errorMsg = typeof data.error === 'string' ? data.error : (data.error.message || data.error);
+                                    const hint = data.hint ? `<br><small>${data.hint}</small>` : '';
+                                    updateTabContent('enformion-enrichment', renderError(errorMsg + hint), 'error');
+                                } else {
+                                    const message = data.message || 'Unknown error';
+                                    updateTabContent('enformion-enrichment', renderError(message), 'error');
+                                }
+                            } else {
+                                updateTabContent('enformion-enrichment', renderError('Failed to parse response'), 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Enformion enrichment error:', err);
+                            updateTabContent('enformion-enrichment', renderError(err.message), 'error');
+                        })
+                );
+                */
+
+                // Person Search
+                if (enformionCriteriaCount >= 2) {
+                    promises.push(
+                        fetch(`/api/enformion?endpoint=person-search&${enformionParams.toString()}`)
+                            .then(async res => {
+                                const data = await res.json().catch(() => null);
+                                if (res.ok && data) {
+                                    if (data.status === 200 && data.data) {
+                                        updateTabContent('enformion-person-search', renderEnformionPersonSearch(data.data), 'success');
+                                        tabResults['enformion-person-search'] = data.data;
+                                    } else if (data.status === 404) {
+                                        const message = `
+                                            <div class="alert alert-info">
+                                                <span>ℹ️</span>
+                                                <div>
+                                                    <strong>No Search Results Found</strong><br>
+                                                    No persons found matching the search criteria in Enformion database.
+                                                </div>
+                                            </div>
+                                        `;
+                                        updateTabContent('enformion-person-search', message, 'warning');
+                                    } else {
+                                        const message = (data.error && (data.error.message || data.error)) || data.message || 'Unknown error';
+                                        updateTabContent('enformion-person-search', renderError(message), 'error');
+                                    }
+                                } else {
+                                    updateTabContent('enformion-person-search', renderError('Failed to parse response'), 'error');
+                                }
+                            })
+                            .catch(err => updateTabContent('enformion-person-search', renderError(err.message), 'error'))
+                    );
+                }
+            }
+
+            // Enformion Reverse Phone
+            if (phone) {
+                promises.push(
+                    fetch(`/api/enformion?endpoint=reverse-phone&phone=${phone}`)
+                        .then(async res => {
+                            const data = await res.json().catch(() => null);
+                            console.log('Enformion reverse-phone response:', { status: res.status, ok: res.ok, data });
+
+                            if (res.ok && data) {
+                                if (data.status === 200 && data.data) {
+                                    updateTabContent('enformion-reverse-phone', renderEnformionReversePhone(data.data), 'success');
+                                    // Store the data for potential refined search
+                                    tabResults['enformion-reverse-phone'] = data.data;
+                                } else if (data.status === 404) {
+                                    const message = `
+                                        <div class="alert alert-info">
+                                            <span>ℹ️</span>
+                                            <div>
+                                                <strong>No Reverse Phone Match Found</strong><br>
+                                                No person associated with this phone number was found in Enformion database.
+                                            </div>
+                                        </div>
+                                    `;
+                                    updateTabContent('enformion-reverse-phone', message, 'warning');
+                                } else if (data.error) {
+                                    const errorMsg = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error));
+                                    const hint = data.hint ? `<br><small>${data.hint}</small>` : '';
+                                    const debug = data.debug ? `<br><pre style="font-size: 0.8em; margin-top: 8px;">${JSON.stringify(data.debug, null, 2)}</pre>` : '';
+                                    updateTabContent('enformion-reverse-phone', renderError(errorMsg + hint + debug), 'error');
+                                } else {
+                                    const message = data.message || 'Unknown error';
+                                    updateTabContent('enformion-reverse-phone', renderError(message), 'error');
+                                }
+                            } else {
+                                const errorDetails = data ? JSON.stringify(data) : 'No response data';
+                                updateTabContent('enformion-reverse-phone', renderError(`Failed to parse response: ${errorDetails}`), 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Enformion reverse-phone error:', err);
+                            updateTabContent('enformion-reverse-phone', renderError(err.message), 'error');
+                        })
+                );
+            }
+
+            // Wait for all primary searches to complete, then show refine button
+            Promise.all(promises).finally(() => {
+                showRefineSearchButton(phone, email, firstName, lastName, city, postalCode);
+            });
+        }
+
+        function showRefineSearchButton(originalPhone, originalEmail, originalFirstName, originalLastName, originalCity, originalPostalCode) {
+            console.log('showRefineSearchButton called', { originalPhone, originalEmail });
+
+            // Helper function to normalize phone numbers to 10 digits only
+            function normalizePhone(phone) {
+                if (!phone) return null;
+                const cleaned = String(phone).replace(/\D/g, '');
+                // Remove leading 1 if present (country code)
+                if (cleaned.length === 11 && cleaned.startsWith('1')) {
+                    return cleaned.substring(1);
+                }
+                return cleaned.length === 10 ? cleaned : null;
+            }
+
+            // Helper function to normalize names (title case)
+            function normalizeName(name) {
+                if (!name) return null;
+                return String(name).trim().toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            }
+
+            // Collect all data from completed searches with normalization
+            const enrichedData = {
+                phones: new Set(),
+                emails: new Set(),
+                names: { first: new Set(), last: new Set() },
+                addresses: { cities: new Set(), states: new Set(), zips: new Set(), streets: new Set() }
+            };
+
+            // Add original data with normalization
+            const normalizedOrigPhone = normalizePhone(originalPhone);
+            if (normalizedOrigPhone) enrichedData.phones.add(normalizedOrigPhone);
+            if (originalEmail) enrichedData.emails.add(originalEmail.toLowerCase());
+            if (originalFirstName) enrichedData.names.first.add(normalizeName(originalFirstName));
+            if (originalLastName) enrichedData.names.last.add(normalizeName(originalLastName));
+            if (originalCity) enrichedData.addresses.cities.add(normalizeName(originalCity));
+            if (originalPostalCode) enrichedData.addresses.zips.add(originalPostalCode);
+
+            // Extract from Trestle reverse phone results
+            const trestleReverse = tabResults['trestle-reverse'];
+            if (trestleReverse && trestleReverse.owners) {
+                trestleReverse.owners.forEach(owner => {
+                    if (owner.name) {
+                        const nameParts = owner.name.trim().split(/\s+/);
+                        if (nameParts.length >= 2) {
+                            enrichedData.names.first.add(normalizeName(nameParts[0]));
+                            enrichedData.names.last.add(normalizeName(nameParts[nameParts.length - 1]));
+                        }
+                    }
+                    if (owner.city) enrichedData.addresses.cities.add(normalizeName(owner.city));
+                    if (owner.state) enrichedData.addresses.states.add(owner.state.toUpperCase());
+                    if (owner.zip) enrichedData.addresses.zips.add(owner.zip);
+                });
+            }
+
+            // Extract from PeopleDataLabs results
+            const pdlData = tabResults['peopledatalabs'];
+            if (pdlData && pdlData.data) {
+                const results = Array.isArray(pdlData.data) ? pdlData.data : [pdlData.data];
+                results.forEach(person => {
+                    if (person.first_name) enrichedData.names.first.add(normalizeName(person.first_name));
+                    if (person.last_name) enrichedData.names.last.add(normalizeName(person.last_name));
+                    if (person.phone_numbers) {
+                        person.phone_numbers.forEach(p => {
+                            const normalized = normalizePhone(p);
+                            if (normalized) enrichedData.phones.add(normalized);
+                        });
+                    }
+                    if (person.emails) {
+                        person.emails.forEach(e => {
+                            if (e.address) enrichedData.emails.add(e.address.toLowerCase());
+                        });
+                    }
+                    if (person.location_locality) enrichedData.addresses.cities.add(normalizeName(person.location_locality));
+                    if (person.location_region) enrichedData.addresses.states.add(person.location_region.toUpperCase());
+                    if (person.location_postal_code) enrichedData.addresses.zips.add(person.location_postal_code);
+                });
+            }
+
+            // Extract from Enformion reverse phone results
+            const enformionReverse = tabResults['enformion-reverse-phone'];
+            if (enformionReverse && enformionReverse.Persons) {
+                enformionReverse.Persons.forEach(person => {
+                    const name = person.name || {};
+                    if (name.firstName) enrichedData.names.first.add(normalizeName(name.firstName));
+                    if (name.lastName) enrichedData.names.last.add(normalizeName(name.lastName));
+
+                    (person.phoneNumbers || []).forEach(p => {
+                        const phone = p.phoneNumber || p;
+                        const normalized = normalizePhone(phone);
+                        if (normalized) enrichedData.phones.add(normalized);
+                    });
+
+                    (person.emailAddresses || []).forEach(e => {
+                        const email = e.emailAddress || e;
+                        if (email) enrichedData.emails.add(email.toLowerCase());
+                    });
+
+                    (person.addresses || []).forEach(addr => {
+                        if (addr.city) enrichedData.addresses.cities.add(normalizeName(addr.city));
+                        if (addr.state) enrichedData.addresses.states.add(addr.state.toUpperCase());
+                        if (addr.zip) enrichedData.addresses.zips.add(addr.zip);
+                        if (addr.streetAddress) enrichedData.addresses.streets.add(addr.streetAddress);
+                    });
+                });
+            }
+
+            // Count total criteria found
+            const phonesArray = Array.from(enrichedData.phones);
+            const emailsArray = Array.from(enrichedData.emails);
+            const firstNamesArray = Array.from(enrichedData.names.first);
+            const lastNamesArray = Array.from(enrichedData.names.last);
+            const citiesArray = Array.from(enrichedData.addresses.cities);
+            const statesArray = Array.from(enrichedData.addresses.states);
+            const zipsArray = Array.from(enrichedData.addresses.zips);
+            const streetsArray = Array.from(enrichedData.addresses.streets);
+
+            const totalCriteria = phonesArray.length + emailsArray.length +
+                                firstNamesArray.length + lastNamesArray.length +
+                                citiesArray.length + statesArray.length + zipsArray.length;
+
+            console.log('Enriched data collected:', {
+                phones: phonesArray,
+                emails: emailsArray,
+                names: { first: firstNamesArray, last: lastNamesArray },
+                totalCriteria
+            });
+
+            // Helper to format phone for display
+            function formatPhoneDisplay(phone) {
+                if (phone.length === 10) {
+                    return `(${phone.slice(0,3)}) ${phone.slice(3,6)}-${phone.slice(6)}`;
+                }
+                return phone;
+            }
+
+            // Create a detailed summary panel
+            const summaryHtml = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 16px 0; font-size: 1.4rem;">🔍 Combined Search Criteria from All Sources</h3>
+                    <p style="margin: 0 0 20px 0; opacity: 0.95;">Found <strong>${totalCriteria} unique data points</strong> (deduplicated and normalized)</p>
+
+                    <div style="display: grid; gap: 16px; margin-bottom: 20px;">
+                        ${phonesArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">📞 Phone Numbers (${phonesArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${phonesArray.map(p => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${formatPhoneDisplay(p)}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${emailsArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">✉️ Email Addresses (${emailsArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${emailsArray.map(e => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;">${e}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${firstNamesArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">👤 First Names (${firstNamesArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${firstNamesArray.map(n => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${n}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${lastNamesArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">👥 Last Names (${lastNamesArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${lastNamesArray.map(n => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${n}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${citiesArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">🏙️ Cities (${citiesArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${citiesArray.map(c => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${c}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${statesArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">🗺️ States (${statesArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${statesArray.map(s => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${s}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${zipsArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">📮 Zip Codes (${zipsArray.length})</div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${zipsArray.map(z => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;">${z}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${streetsArray.length > 0 ? `
+                            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 8px;">
+                                <div style="font-weight: 600; margin-bottom: 10px; font-size: 1.1rem;">🏠 Street Addresses (${streetsArray.length})</div>
+                                <div style="display: flex; flex-direction: column; gap: 6px;">
+                                    ${streetsArray.map(s => `<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem;">${s}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <button
+                        onclick="runRefinedSearch()"
+                        style="background: white; color: #667eea; border: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; width: 100%;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'"
+                    >
+                        🚀 Run Refined Search with All Combined Data
+                    </button>
+                </div>
+            `;
+
+            // Store enriched data globally for the button to use
+            window.refinedSearchData = enrichedData;
+
+            // Insert the summary before the tab navigation
+            const tabNav = document.getElementById('tabNav');
+            console.log('Inserting summary, tabNav found:', !!tabNav);
+            if (tabNav) {
+                // Check if summary already exists
+                let summaryDiv = document.getElementById('refine-search-summary');
+                if (!summaryDiv) {
+                    summaryDiv = document.createElement('div');
+                    summaryDiv.id = 'refine-search-summary';
+                    summaryDiv.innerHTML = summaryHtml;
+                    tabNav.parentElement.insertBefore(summaryDiv, tabNav);
+                    console.log('Summary panel inserted successfully');
+                } else {
+                    console.log('Summary panel already exists');
+                }
+            } else {
+                console.error('tabNav element not found!');
+            }
+        }
+
+        function runRefinedSearch() {
+            const data = window.refinedSearchData;
+            if (!data) {
+                alert('No enriched data available');
+                return;
+            }
+
+            // Remove the summary panel
+            const summaryDiv = document.getElementById('refine-search-summary');
+            if (summaryDiv) summaryDiv.remove();
+
+            // Convert sets to arrays
+            const phonesArray = Array.from(data.phones);
+            const emailsArray = Array.from(data.emails);
+            const firstNamesArray = Array.from(data.names.first);
+            const lastNamesArray = Array.from(data.names.last);
+            const citiesArray = Array.from(data.addresses.cities);
+            const statesArray = Array.from(data.addresses.states);
+            const zipsArray = Array.from(data.addresses.zips);
+            const streetsArray = Array.from(data.addresses.streets);
+
+            console.log('Running refined search with:', {
+                phones: phonesArray.length,
+                emails: emailsArray.length,
+                firstNames: firstNamesArray.length,
+                lastNames: lastNamesArray.length
+            });
+
+            const firstName = firstNamesArray[0];
+            const lastName = lastNamesArray[0];
+            const originalPhone = phonesArray[0];
+
+            // Run Caller ID for additional phone numbers (skip first one if it was already searched)
+            phonesArray.slice(1, 3).forEach((phone, index) => {
+                const tabId = `trestle-caller-refined-${index + 1}`;
+                createTab(tabId, `📞 Caller ID ${index + 1} (Refined)`, 'loading');
+
+                fetch(`/api/trestle?endpoint=phone_intel&phone=${phone}`)
+                    .then(async res => {
+                        const data = await res.json();
+                        if (res.ok && data) {
+                            updateTabContent(tabId, renderTrestlePhoneIntel(data), 'success');
+                            tabResults[tabId] = data;
+                        } else {
+                            updateTabContent(tabId, renderError('No caller ID data found'), 'warning');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Caller ID refined ${index + 1} error:`, err);
+                        updateTabContent(tabId, renderError(err.message), 'error');
+                    });
+            });
+
+            // Run Email ID for emails (need email + name)
+            if (firstName || lastName) {
+                emailsArray.slice(0, 2).forEach((email, index) => {
+                    const tabId = `enformion-email-refined-${index + 1}`;
+                    createTab(tabId, `✉️ Email ID ${index + 1} (Refined)`, 'loading');
+
+                    const params = new URLSearchParams();
+                    params.append('email', email);
+                    if (firstName) params.append('firstName', firstName);
+                    if (lastName) params.append('lastName', lastName);
+
+                    // Changed from contact-enrichment to person-search (contact-enrichment returns HTML errors)
+                    const url = `/api/enformion?endpoint=person-search&${params.toString()}`;
+                    console.log(`📧 EMAIL ID ${index + 1} (Refined) - Making request:`, {
+                        url,
+                        params: Object.fromEntries(params)
+                    });
+
+                    fetch(url)
+                        .then(async res => {
+                            const data = await res.json();
+                            if (res.ok && data && data.status === 200 && data.data) {
+                                updateTabContent(tabId, renderEnformionPersonSearch(data.data), 'success');
+                                tabResults[tabId] = data.data;
+                            } else if (data && data.status === 404) {
+                                updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No person data found for this email.</div></div>', 'warning');
+                            } else {
+                                const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                                updateTabContent(tabId, renderError(errorMsg), 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(`Email ID refined ${index + 1} error:`, err);
+                            updateTabContent(tabId, renderError(err.message), 'error');
+                        });
+                });
+            }
+
+            // Run Address/Location searches - need at least 2 criteria
+            citiesArray.slice(0, 2).forEach((city, index) => {
+                const state = statesArray[index];
+                const zip = zipsArray[index];
+
+                // Count criteria for this address
+                let criteriaCount = 0;
+                if (firstName) criteriaCount++;
+                if (lastName) criteriaCount++;
+                if (city) criteriaCount++;
+                if (state) criteriaCount++;
+                if (zip) criteriaCount++;
+
+                // Only search if we have 2+ criteria
+                if (criteriaCount >= 2) {
+                    const tabId = `enformion-address-refined-${index + 1}`;
+                    createTab(tabId, `🏠 Address ${index + 1} (Refined)`, 'loading');
+
+                    const params = new URLSearchParams();
+                    if (firstName) params.append('firstName', firstName);
+                    if (lastName) params.append('lastName', lastName);
+                    if (city) params.append('city', city);
+                    if (state) params.append('state', state);
+                    if (zip) params.append('postalCode', zip);
+
+                    const url = `/api/enformion?endpoint=person-search&${params.toString()}`;
+                    console.log(`🏠 ADDRESS ${index + 1} (Refined) - Making request:`, {
+                        url,
+                        params: Object.fromEntries(params),
+                        criteriaCount
+                    });
+
+                    fetch(url)
+                        .then(async res => {
+                            const data = await res.json();
+                            if (res.ok && data && data.status === 200 && data.data) {
+                                updateTabContent(tabId, renderEnformionPersonSearch(data.data), 'success');
+                                tabResults[tabId] = data.data;
+                            } else if (data && data.status === 404) {
+                                updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No person found at this address.</div></div>', 'warning');
+                            } else {
+                                const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                                updateTabContent(tabId, renderError(errorMsg), 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(`Address refined ${index + 1} error:`, err);
+                            updateTabContent(tabId, renderError(err.message), 'error');
+                        });
+                }
+            });
+
+            // Run comprehensive Person Search if we have name + (contact OR address)
+            // Name counts as ONE criterion, so we need phone/email OR city/state/zip
+            if (firstName && lastName) {
+                const hasContact = phonesArray.length > 0 || emailsArray.length > 0;
+                const hasAddress = citiesArray.length > 0 || statesArray.length > 0 || zipsArray.length > 0;
+
+                if (hasContact || hasAddress) {
+                    const tabId = 'enformion-person-refined';
+                    createTab(tabId, '👤 Person Search (Refined)', 'loading');
+
+                    const params = new URLSearchParams();
+                    params.append('firstName', firstName);
+                    params.append('lastName', lastName);
+
+                    // Add contact info (phone or email)
+                    if (phonesArray.length > 0) params.append('phone', phonesArray[0]);
+                    else if (emailsArray.length > 0) params.append('email', emailsArray[0]);
+
+                    // Add address info if available
+                    if (citiesArray.length > 0) params.append('city', citiesArray[0]);
+                    if (statesArray.length > 0) params.append('state', statesArray[0]);
+                    if (zipsArray.length > 0) params.append('postalCode', zipsArray[0]);
+
+                    const url = `/api/enformion?endpoint=person-search&${params.toString()}`;
+                    console.log('🔍 PERSON SEARCH (Refined) - Making request:', {
+                        url,
+                        params: Object.fromEntries(params),
+                        phonesAvailable: phonesArray,
+                        emailsAvailable: emailsArray
+                    });
+
+                    fetch(url)
+                        .then(async res => {
+                            const data = await res.json();
+                            if (res.ok && data && data.status === 200 && data.data) {
+                                updateTabContent(tabId, renderEnformionPersonSearch(data.data), 'success');
+                                tabResults[tabId] = data.data;
+                            } else if (data && data.status === 404) {
+                                updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No person search results found.</div></div>', 'warning');
+                            } else {
+                                const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                                updateTabContent(tabId, renderError(errorMsg), 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Person search refined error:', err);
+                            updateTabContent(tabId, renderError(err.message), 'error');
+                        });
+                }
+            }
+        }
+
+        function runEnrichedEnformionSearch(originalPhone, originalEmail, originalFirstName, originalLastName, originalCity, originalPostalCode) {
+            // This function has been replaced by the manual "Refine Search" button in showRefineSearchButton()
+            // Keeping the function for backward compatibility but it does nothing now
+            console.log('runEnrichedEnformionSearch called but disabled - use the Refine Search button instead');
+            return;
+
+            // OLD CODE BELOW - DISABLED
+            // Collect enriched data from all completed API responses
+            const enrichedData = {
+                phones: new Set(),
+                emails: new Set(),
+                names: { first: new Set(), last: new Set() },
+                addresses: { cities: new Set(), states: new Set(), zips: new Set() }
+            };
+
+            // Add original data
+            if (originalPhone) enrichedData.phones.add(originalPhone);
+            if (originalEmail) enrichedData.emails.add(originalEmail);
+            if (originalFirstName) enrichedData.names.first.add(originalFirstName);
+            if (originalLastName) enrichedData.names.last.add(originalLastName);
+            if (originalCity) enrichedData.addresses.cities.add(originalCity);
+            if (originalPostalCode) enrichedData.addresses.zips.add(originalPostalCode);
+
+            // Extract data from Trestle reverse phone results
+            const trestleReverse = tabResults['trestle-reverse'];
+            if (trestleReverse && trestleReverse.owners) {
+                trestleReverse.owners.forEach(owner => {
+                    if (owner.firstname) enrichedData.names.first.add(owner.firstname);
+                    if (owner.lastname) enrichedData.names.last.add(owner.lastname);
+                    if (owner.name) {
+                        const parts = owner.name.split(' ');
+                        if (parts.length >= 2) {
+                            enrichedData.names.first.add(parts[0]);
+                            enrichedData.names.last.add(parts[parts.length - 1]);
+                        }
+                    }
+                    if (owner.city) enrichedData.addresses.cities.add(owner.city);
+                    if (owner.state) enrichedData.addresses.states.add(owner.state);
+                    if (owner.zip) enrichedData.addresses.zips.add(owner.zip);
+                });
+            }
+
+            // Extract data from PeopleDataLabs results
+            const pdlData = tabResults['peopledatalabs'];
+            if (pdlData && pdlData.data) {
+                const person = pdlData.data;
+
+                // Names
+                if (person.first_name) enrichedData.names.first.add(person.first_name);
+                if (person.last_name) enrichedData.names.last.add(person.last_name);
+
+                // Phones
+                if (person.phone_numbers) {
+                    person.phone_numbers.forEach(p => {
+                        const phone = p.number || p;
+                        if (phone) enrichedData.phones.add(phone);
+                    });
+                }
+
+                // Emails
+                if (person.emails) {
+                    person.emails.forEach(e => {
+                        const email = e.address || e;
+                        if (email) enrichedData.emails.add(email);
+                    });
+                }
+
+                // Addresses
+                if (person.locations) {
+                    person.locations.forEach(loc => {
+                        if (loc.locality) enrichedData.addresses.cities.add(loc.locality);
+                        if (loc.region) enrichedData.addresses.states.add(loc.region);
+                        if (loc.postal_code) enrichedData.addresses.zips.add(loc.postal_code);
+                    });
+                }
+            }
+
+            // Check if we now have enough criteria for Enformion (at least 2)
+            const hasName = enrichedData.names.first.size > 0 || enrichedData.names.last.size > 0;
+            const hasContact = enrichedData.phones.size > 0 || enrichedData.emails.size > 0;
+            const hasAddress = enrichedData.addresses.cities.size > 0 || enrichedData.addresses.states.size > 0 || enrichedData.addresses.zips.size > 0;
+            const criteriaCount = [hasName, hasContact, hasAddress].filter(Boolean).length;
+
+            console.log('Enriched data for Enformion:', {
+                phones: Array.from(enrichedData.phones),
+                emails: Array.from(enrichedData.emails),
+                firstNames: Array.from(enrichedData.names.first),
+                lastNames: Array.from(enrichedData.names.last),
+                cities: Array.from(enrichedData.addresses.cities),
+                states: Array.from(enrichedData.addresses.states),
+                zips: Array.from(enrichedData.addresses.zips),
+                criteriaCount
+            });
+
+            // If we didn't have enough criteria before but do now, create tabs and run searches
+            const originalCriteriaCount = [originalFirstName || originalLastName, originalPhone || originalEmail, originalCity || originalPostalCode].filter(Boolean).length;
+
+            if (criteriaCount >= 2 && originalCriteriaCount < 2) {
+                console.log('Running enriched Enformion search with', criteriaCount, 'criteria');
+
+                // Create enriched search tabs if they don't exist
+                if (!activeTabs.includes('enformion-enrichment')) {
+                    createTab('enformion-enrichment', '📇 Enformion Contact (Enriched)', 'loading');
+                }
+                if (!activeTabs.includes('enformion-person-search')) {
+                    createTab('enformion-person-search', '🔍 Enformion Search (Enriched)', 'loading');
+                }
+
+                // Build params using enriched data
+                const enrichedParams = new URLSearchParams();
+
+                // Use first available from each category
+                if (enrichedData.phones.size > 0) enrichedParams.append('phone', Array.from(enrichedData.phones)[0]);
+                if (enrichedData.emails.size > 0) enrichedParams.append('email', Array.from(enrichedData.emails)[0]);
+                if (enrichedData.names.first.size > 0) enrichedParams.append('firstName', Array.from(enrichedData.names.first)[0]);
+                if (enrichedData.names.last.size > 0) enrichedParams.append('lastName', Array.from(enrichedData.names.last)[0]);
+                if (enrichedData.addresses.cities.size > 0) enrichedParams.append('city', Array.from(enrichedData.addresses.cities)[0]);
+                if (enrichedData.addresses.states.size > 0) enrichedParams.append('state', Array.from(enrichedData.addresses.states)[0]);
+                if (enrichedData.addresses.zips.size > 0) enrichedParams.append('zip', Array.from(enrichedData.addresses.zips)[0]);
+
+                // Run enriched searches
+                runEnrichedEnformionCalls(enrichedParams);
+            }
+        }
+
+        function runEnrichedEnformionCalls(params) {
+            // Contact Enrichment
+            fetch(`/api/enformion?endpoint=contact-enrichment&${params.toString()}`)
+                .then(async res => {
+                    const data = await res.json().catch(() => null);
+                    console.log('Enriched Enformion enrichment response:', data);
+                    if (res.ok && data) {
+                        if (data.status === 200 && data.data) {
+                            updateTabContent('enformion-enrichment', renderEnformionEnrichment(data.data), 'success');
+                        } else if (data.status === 404) {
+                            const message = `
+                                <div class="alert alert-info">
+                                    <span>ℹ️</span>
+                                    <div>
+                                        <strong>No Contact Match Found</strong><br>
+                                        Even with enriched data from other sources, Enformion couldn't find a matching person record.
+                                    </div>
+                                </div>
+                            `;
+                            updateTabContent('enformion-enrichment', message, 'warning');
+                        } else if (data.error) {
+                            const errorMsg = typeof data.error === 'string' ? data.error : (data.error.message || data.error);
+                            const hint = data.hint ? `<br><small>${data.hint}</small>` : '';
+                            updateTabContent('enformion-enrichment', renderError(errorMsg + hint), 'error');
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Enriched Enformion enrichment error:', err);
+                    updateTabContent('enformion-enrichment', renderError(err.message), 'error');
+                });
+
+            // Person Search
+            fetch(`/api/enformion?endpoint=person-search&${params.toString()}`)
+                .then(async res => {
+                    const data = await res.json().catch(() => null);
+                    console.log('Enriched Enformion search response:', data);
+                    if (res.ok && data) {
+                        if (data.status === 200 && data.data) {
+                            updateTabContent('enformion-person-search', renderEnformionPersonSearch(data.data), 'success');
+                        } else if (data.status === 404) {
+                            const message = `
+                                <div class="alert alert-info">
+                                    <span>ℹ️</span>
+                                    <div>
+                                        <strong>No Search Results Found</strong><br>
+                                        No persons found matching the enriched search criteria in Enformion database.
+                                    </div>
+                                </div>
+                            `;
+                            updateTabContent('enformion-person-search', message, 'warning');
+                        } else if (data.error) {
+                            const errorMsg = typeof data.error === 'string' ? data.error : (data.error.message || data.error);
+                            const hint = data.hint ? `<br><small>${data.hint}</small>` : '';
+                            updateTabContent('enformion-person-search', renderError(errorMsg + hint), 'error');
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Enriched Enformion search error:', err);
+                    updateTabContent('enformion-person-search', renderError(err.message), 'error');
+                });
+        }
+
+        function runFollowUpSearches(enformionData, originalPhone) {
+            console.log('Running follow-up searches from Enformion reverse phone data');
+
+            const persons = enformionData.Persons || [];
+            if (persons.length === 0) return;
+
+            const person = persons[0];
+
+            // Extract all phone numbers (excluding the original searched phone)
+            const phones = person.phoneNumbers || [];
+            const additionalPhones = phones
+                .map(p => p.phoneNumber || p)
+                .filter(p => {
+                    const cleaned = String(p).replace(/\D/g, '');
+                    const originalCleaned = String(originalPhone).replace(/\D/g, '');
+                    return cleaned !== originalCleaned && cleaned.length === 10;
+                })
+                .slice(0, 2); // Limit to 2 additional phones to avoid too many requests
+
+            // Extract emails
+            const emails = (person.emailAddresses || [])
+                .map(e => e.emailAddress || e)
+                .filter(e => e && e.includes('@'))
+                .slice(0, 2); // Limit to 2 emails
+
+            // Extract addresses
+            const addresses = (person.addresses || []).slice(0, 2); // Limit to 2 addresses
+
+            // Extract name for person search
+            const name = person.name || {};
+            const firstName = name.firstName;
+            const lastName = name.lastName;
+
+            console.log('Follow-up data extracted:', { additionalPhones, emails, addresses, firstName, lastName });
+
+            // Run Caller ID for each additional phone
+            additionalPhones.forEach((phone, index) => {
+                const tabId = `trestle-caller-${index + 1}`;
+                const cleanedPhone = phone.replace(/\D/g, '');
+
+                createTab(tabId, `📞 Caller ID ${index + 1} (Enriched)`, 'loading');
+
+                fetch(`/api/trestle?endpoint=phone_intel&phone=${cleanedPhone}`)
+                    .then(async res => {
+                        const data = await res.json();
+                        if (res.ok && data) {
+                            updateTabContent(tabId, renderTrestlePhoneIntel(data), 'success');
+                            tabResults[tabId] = data;
+                        } else {
+                            updateTabContent(tabId, renderError('No caller ID data found'), 'warning');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Caller ID ${index + 1} error:`, err);
+                        updateTabContent(tabId, renderError(err.message), 'error');
+                    });
+            });
+
+            // Run Email ID for each email (using Enformion Contact Enrichment)
+            emails.forEach((email, index) => {
+                // Enformion requires at least 2 criteria - skip if we don't have name
+                if (!firstName && !lastName) {
+                    console.log(`Skipping email ${email} - need at least firstName or lastName`);
+                    return;
+                }
+
+                const tabId = `enformion-email-${index + 1}`;
+
+                createTab(tabId, `✉️ Email ID ${index + 1} (Enriched)`, 'loading');
+
+                const params = new URLSearchParams();
+                params.append('email', email);
+                if (firstName) params.append('firstName', firstName);
+                if (lastName) params.append('lastName', lastName);
+
+                fetch(`/api/enformion?endpoint=contact-enrichment&${params.toString()}`)
+                    .then(async res => {
+                        const data = await res.json();
+                        if (res.ok && data && data.status === 200 && data.data) {
+                            updateTabContent(tabId, renderEnformionEnrichment(data.data), 'success');
+                            tabResults[tabId] = data.data;
+                        } else if (data && data.status === 404) {
+                            updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No enrichment data found for this email.</div></div>', 'warning');
+                        } else {
+                            const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                            updateTabContent(tabId, renderError(errorMsg), 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Email ID ${index + 1} error:`, err);
+                        updateTabContent(tabId, renderError(err.message), 'error');
+                    });
+            });
+
+            // Run Address ID for each address (using Enformion Person Search)
+            addresses.forEach((address, index) => {
+                const tabId = `enformion-address-${index + 1}`;
+                const city = address.city;
+                const state = address.state;
+                const zip = address.zip;
+
+                // Count how many criteria we have
+                let criteriaCount = 0;
+                if (firstName) criteriaCount++;
+                if (lastName) criteriaCount++;
+                if (city) criteriaCount++;
+                if (state) criteriaCount++;
+                if (zip) criteriaCount++;
+
+                // Enformion requires at least 2 criteria
+                if (criteriaCount < 2) {
+                    console.log(`Skipping address ${index + 1} - only ${criteriaCount} criteria available`);
+                    return;
+                }
+
+                createTab(tabId, `🏠 Address ID ${index + 1} (Enriched)`, 'loading');
+
+                const params = new URLSearchParams();
+                if (firstName) params.append('firstName', firstName);
+                if (lastName) params.append('lastName', lastName);
+                if (city) params.append('city', city);
+                if (state) params.append('state', state);
+                if (zip) params.append('postalCode', zip);
+
+                fetch(`/api/enformion?endpoint=person-search&${params.toString()}`)
+                    .then(async res => {
+                        const data = await res.json();
+                        if (res.ok && data && data.status === 200 && data.data) {
+                            updateTabContent(tabId, renderEnformionPersonSearch(data.data), 'success');
+                            tabResults[tabId] = data.data;
+                        } else if (data && data.status === 404) {
+                            updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No person found at this address.</div></div>', 'warning');
+                        } else {
+                            const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                            updateTabContent(tabId, renderError(errorMsg), 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Address ID ${index + 1} error:`, err);
+                        updateTabContent(tabId, renderError(err.message), 'error');
+                    });
+            });
+
+            // Run Person Search with name and location if we have enough data
+            if (firstName && lastName) {
+                const tabId = 'enformion-person-enriched';
+                const city = addresses[0]?.city;
+                const state = addresses[0]?.state;
+
+                createTab(tabId, '👤 Person Search (Enriched)', 'loading');
+
+                const params = new URLSearchParams();
+                params.append('firstName', firstName);
+                params.append('lastName', lastName);
+                if (city) params.append('city', city);
+                if (state) params.append('state', state);
+
+                fetch(`/api/enformion?endpoint=person-search&${params.toString()}`)
+                    .then(async res => {
+                        const data = await res.json();
+                        if (res.ok && data && data.status === 200 && data.data) {
+                            updateTabContent(tabId, renderEnformionPersonSearch(data.data), 'success');
+                            tabResults[tabId] = data.data;
+                        } else if (data && data.status === 404) {
+                            updateTabContent(tabId, '<div class="alert alert-info"><span>ℹ️</span><div>No person search results found.</div></div>', 'warning');
+                        } else {
+                            const errorMsg = data?.error?.message || data?.error || 'Unknown error';
+                            updateTabContent(tabId, renderError(errorMsg), 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Person search enriched error:', err);
+                        updateTabContent(tabId, renderError(err.message), 'error');
+                    });
+            }
+        }
+
+        function createTab(id, label, status = 'loading') {
+            activeTabs.push(id);
+
+            const tabNav = document.getElementById('tabNav');
+            const tabContent = document.getElementById('tabContent');
+
+            // Create tab button
+            const button = document.createElement('button');
+            button.className = 'tab-button';
+            button.id = `tab-btn-${id}`;
+            button.onclick = () => switchTab(id);
+            button.innerHTML = `
+                <span class="tab-icon">${label.split(' ')[0]}</span>
+                <span>${label.substring(label.indexOf(' ') + 1)}</span>
+                <span class="status-dot ${status}"></span>
+            `;
+            tabNav.appendChild(button);
+
+            // Create tab pane
+            const pane = document.createElement('div');
+            pane.className = 'tab-pane';
+            pane.id = `tab-pane-${id}`;
+            pane.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading ${label}...</p>
+                </div>
+            `;
+            tabContent.appendChild(pane);
+        }
+
+        function switchTab(id) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`tab-btn-${id}`).classList.add('active');
+
+            // Update panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById(`tab-pane-${id}`).classList.add('active');
+        }
+
+        function updateTabContent(id, html, status) {
+            const pane = document.getElementById(`tab-pane-${id}`);
+            const button = document.getElementById(`tab-btn-${id}`);
+
+            if (pane) pane.innerHTML = html;
+
+            if (button) {
+                const dot = button.querySelector('.status-dot');
+                if (dot) {
+                    dot.className = `status-dot ${status}`;
+                }
+            }
+
+            tabResults[id] = { html, status };
+        }
+
+        function clearUnifiedForm() {
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('emailAddress').value = '';
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('postalCode').value = '';
+            document.getElementById('company').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('profileUrl').value = '';
+            document.getElementById('unifiedResults').classList.remove('active');
+            document.getElementById('tabNav').innerHTML = '';
+            document.getElementById('tabContent').innerHTML = '';
+            activeTabs = [];
+            tabResults = {};
+        }
+
+        // ========== RENDER FUNCTIONS ==========
+
+        function renderError(message) {
+            return `
+                <div class="alert alert-error">
+                    <span>❌</span>
+                    <div><strong>Error:</strong> ${message}</div>
+                </div>
+            `;
+        }
+
+        function renderTrestlePhoneIntel(data) {
+            return `
+                <div class="data-section">
+                    <h3>📱 Phone Validation Results</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone Number</span>
+                        <span class="data-value">${formatPhone(data.phone_number)}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Valid Number</span>
+                        <span class="data-value">
+                            ${data.is_valid ? '<span class="tag tag-success">✓ Valid</span>' : '<span class="tag tag-error">✗ Invalid</span>'}
+                        </span>
+                    </div>
+                    ${data.activity_score !== undefined ? `
+                        <div class="data-row">
+                            <span class="data-label">Activity Score</span>
+                            <span class="data-value">${getActivityScoreBadge(data.activity_score)}</span>
+                        </div>
+                    ` : ''}
+                    <div class="data-row">
+                        <span class="data-label">Line Type</span>
+                        <span class="data-value">${data.line_type || 'Unknown'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Carrier</span>
+                        <span class="data-value">${data.carrier || 'Unknown'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Prepaid</span>
+                        <span class="data-value">${data.is_prepaid !== undefined ? (data.is_prepaid ? 'Yes' : 'No') : 'Unknown'}</span>
+                    </div>
+                    ${data.is_commercial !== undefined ? `
+                        <div class="data-row">
+                            <span class="data-label">Commercial</span>
+                            <span class="data-value">${data.is_commercial ? 'Yes' : 'No'}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderTrestleReverse(data) {
+            let ownersHTML = '';
+
+            if (data.owners && data.owners.length > 0) {
+                ownersHTML = data.owners.map((owner, index) => `
+                    <div class="owner-card">
+                        <div class="owner-header">
+                            <div>
+                                <div class="owner-name">${owner.name || 'Unknown'}</div>
+                                <div style="color: var(--gray-600); font-size: 0.9rem; margin-top: 4px;">
+                                    ${owner.firstname || ''} ${owner.middlename || ''} ${owner.lastname || ''}
+                                </div>
+                            </div>
+                            <div class="owner-badge">
+                                ${owner.age_range ? `<span class="tag tag-info">${owner.age_range} years</span>` : ''}
+                                ${owner.gender ? `<span class="tag">${owner.gender === 'M' ? '♂️ Male' : owner.gender === 'F' ? '♀️ Female' : owner.gender}</span>` : ''}
+                            </div>
+                        </div>
+
+                        ${owner.current_addresses && owner.current_addresses.length > 0 ? `
+                            <div class="data-section" style="margin-top: 16px;">
+                                <h3>📍 Current Addresses</h3>
+                                ${owner.current_addresses.map(addr => `
+                                    <div class="address-item">
+                                        <div class="address-line">
+                                            <strong>${addr.street_line_1 || ''}</strong>
+                                            ${addr.street_line_2 ? `<br>${addr.street_line_2}` : ''}
+                                        </div>
+                                        <div class="address-line">
+                                            ${addr.city || ''}, ${addr.state_code || ''} ${addr.postal_code || ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${owner.emails && owner.emails.length > 0 ? `
+                            <div class="data-section" style="margin-top: 16px;">
+                                <h3>✉️ Email Addresses</h3>
+                                <div class="email-list">
+                                    ${owner.emails.map(email => `<span class="email-item">${email}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            return `
+                <div class="data-section">
+                    <h3>📞 Phone Information</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone Number</span>
+                        <span class="data-value">${formatPhone(data.phone_number)}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Carrier</span>
+                        <span class="data-value">${data.carrier || 'Unknown'}</span>
+                    </div>
+                </div>
+                ${ownersHTML ? `
+                    <div class="data-section">
+                        <h3>👥 Owner Information</h3>
+                        ${ownersHTML}
+                    </div>
+                ` : '<div class="alert alert-info"><span>ℹ️</span><div>No owner information found.</div></div>'}
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderTwilioLookup(data) {
+            const carrierName = data.carrier?.name || data.carrier || 'Unknown';
+            const carrierType = data.carrier?.type || data.type || 'Unknown';
+
+            return `
+                <div class="data-section">
+                    <h3>📡 Twilio Lookup Result</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone</span>
+                        <span class="data-value">${formatPhone(data.phone_number || data.phoneNumber || '')}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Carrier</span>
+                        <span class="data-value">${carrierName}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Type</span>
+                        <span class="data-value">${carrierType}</span>
+                    </div>
+                    ${data.national_format ? `
+                        <div class="data-row">
+                            <span class="data-label">National Format</span>
+                            <span class="data-value">${data.national_format}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderTwilioCallerName(data) {
+            const cn = data.caller_name || {};
+            const name = cn.caller_name || null;
+            const type = cn.caller_type || 'UNDETERMINED';
+
+            return `
+                <div class="data-section">
+                    <h3>🗣️ Caller Name</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone Number</span>
+                        <span class="data-value">${formatPhone(data.phone_number || '')}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Caller Name</span>
+                        <span class="data-value">${name ? `<strong>${name}</strong>` : '<span class="tag tag-warning">No Data</span>'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Caller Type</span>
+                        <span class="data-value">${type}</span>
+                    </div>
+                </div>
+                ${!name ? '<div class="alert alert-info"><span>ℹ️</span><div>CNAM data not available for this number.</div></div>' : ''}
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderTwilioSmsPumping(data) {
+            const spr = data.sms_pumping_risk || {};
+            const riskLevel = spr.carrier_risk_category || 'Unknown';
+            const numberBlocked = spr.number_blocked;
+
+            let riskBadge = 'tag';
+            if (riskLevel.toLowerCase() === 'high') riskBadge = 'tag tag-error';
+            else if (riskLevel.toLowerCase() === 'medium') riskBadge = 'tag tag-warning';
+            else if (riskLevel.toLowerCase() === 'low') riskBadge = 'tag tag-success';
+
+            return `
+                <div class="data-section">
+                    <h3>⚠️ SMS Pumping Risk</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone Number</span>
+                        <span class="data-value">${formatPhone(data.phone_number || '')}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Risk Category</span>
+                        <span class="data-value"><span class="${riskBadge}">${riskLevel.toUpperCase()}</span></span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Number Blocked</span>
+                        <span class="data-value">${numberBlocked ? '<span class="tag tag-error">Yes</span>' : '<span class="tag tag-success">No</span>'}</span>
+                    </div>
+                </div>
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderTwilioIdentity(data) {
+            const im = data.identity_match || {};
+
+            const getMatchBadge = (matchValue) => {
+                if (!matchValue) return '<span class="tag">No Data</span>';
+                if (matchValue === 'match') return '<span class="tag tag-success">✓ Match</span>';
+                if (matchValue === 'no_match') return '<span class="tag tag-error">✗ No Match</span>';
+                return `<span class="tag">${matchValue}</span>`;
+            };
+
+            return `
+                <div class="data-section">
+                    <h3>🛡️ Identity Match Result</h3>
+                    <div class="data-row">
+                        <span class="data-label">Phone Number</span>
+                        <span class="data-value">${formatPhone(data.phone_number || '')}</span>
+                    </div>
+                    ${im.first_name_match ? `
+                        <div class="data-row">
+                            <span class="data-label">First Name</span>
+                            <span class="data-value">${getMatchBadge(im.first_name_match)}</span>
+                        </div>
+                    ` : ''}
+                    ${im.last_name_match ? `
+                        <div class="data-row">
+                            <span class="data-label">Last Name</span>
+                            <span class="data-value">${getMatchBadge(im.last_name_match)}</span>
+                        </div>
+                    ` : ''}
+                    ${im.city_match ? `
+                        <div class="data-row">
+                            <span class="data-label">City</span>
+                            <span class="data-value">${getMatchBadge(im.city_match)}</span>
+                        </div>
+                    ` : ''}
+                    ${im.postal_code_match ? `
+                        <div class="data-row">
+                            <span class="data-label">Postal Code</span>
+                            <span class="data-value">${getMatchBadge(im.postal_code_match)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                ${renderRawJson(data)}
+            `;
+        }
+
+        function renderPDL(response) {
+            const person = response.data;
+            if (!person) return renderError('No person data found');
+
+            const fullName = person.full_name || 'Unknown';
+            const likelihood = response.likelihood || 0;
+            const emails = person.emails || [];
+            const phones = person.phone_numbers || [];
+            const experience = person.experience || [];
+
+            let likelihoodBadge = 'tag';
+            if (likelihood >= 8) likelihoodBadge = 'tag tag-success';
+            else if (likelihood >= 5) likelihoodBadge = 'tag tag-warning';
+            else likelihoodBadge = 'tag tag-error';
+
+            return `
+                <div class="data-section">
+                    <h3>👤 Personal Information</h3>
+                    <div class="data-row">
+                        <span class="data-label">Full Name</span>
+                        <span class="data-value"><strong>${fullName}</strong></span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Match Likelihood</span>
+                        <span class="data-value"><span class="${likelihoodBadge}">${likelihood}/10</span></span>
+                    </div>
+                    ${person.linkedin_url ? `
+                        <div class="data-row">
+                            <span class="data-label">LinkedIn</span>
+                            <span class="data-value"><a href="${person.linkedin_url}" target="_blank">View Profile</a></span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${emails.length > 0 ? `
+                    <div class="data-section">
+                        <h3>✉️ Email Addresses (${emails.length})</h3>
+                        <div class="email-list">
+                            ${emails.slice(0, 5).map(e => `
+                                <span class="email-item">${e.address || e}</span>
+                            `).join('')}
+                            ${emails.length > 5 ? `<small>...and ${emails.length - 5} more</small>` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${phones.length > 0 ? `
+                    <div class="data-section">
+                        <h3>📞 Phone Numbers (${phones.length})</h3>
+                        <div class="phone-list">
+                            ${phones.slice(0, 5).map(p => `
+                                <span class="tag tag-info">${formatPhone(p.number || p)}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${experience.length > 0 ? `
+                    <div class="data-section">
+                        <h3>💼 Work Experience (${experience.length})</h3>
+                        ${experience.slice(0, 3).map(exp => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                <div style="font-weight: 700;">${exp.title?.name || 'Position'}</div>
+                                ${exp.company?.name ? `<div style="color: var(--gray-600);">${exp.company.name}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderPDLSearch(response) {
+            // PDL Search returns an array of results with a total count
+            const results = response.data || [];
+            const total = response.total || 0;
+
+            if (results.length === 0) {
+                return `
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <div>No search results found. The Person Search API searches across PDL's database using Elasticsearch queries.</div>
+                    </div>
+                    ${renderRawJson(response)}
+                `;
+            }
+
+            return `
+                <div class="data-section">
+                    <h3>🔎 Search Results (${results.length} of ${total})</h3>
+                    ${results.map((person, idx) => `
+                        <div class="owner-card" style="margin-bottom: 16px;">
+                            <div class="owner-header" style="margin-bottom: 12px;">
+                                <div>
+                                    <div class="owner-name">${person.full_name || 'Unknown'}</div>
+                                    ${person.job_title ? `<div style="color: var(--gray-600); font-size: 0.9rem; margin-top: 4px;">${person.job_title}</div>` : ''}
+                                    ${person.job_company_name ? `<div style="color: var(--gray-600); font-size: 0.85rem;">${person.job_company_name}</div>` : ''}
+                                </div>
+                            </div>
+
+                            ${person.linkedin_url ? `
+                                <div class="data-row">
+                                    <span class="data-label">LinkedIn</span>
+                                    <span class="data-value"><a href="${person.linkedin_url}" target="_blank">View Profile</a></span>
+                                </div>
+                            ` : ''}
+
+                            ${person.phone_numbers && person.phone_numbers.length > 0 ? `
+                                <div class="data-row">
+                                    <span class="data-label">Phone Numbers</span>
+                                    <span class="data-value">
+                                        ${person.phone_numbers.slice(0, 3).map(p => `<span class="tag tag-info">${formatPhone(p)}</span>`).join(' ')}
+                                    </span>
+                                </div>
+                            ` : ''}
+
+                            ${person.emails && person.emails.length > 0 ? `
+                                <div class="data-row">
+                                    <span class="data-label">Emails</span>
+                                    <span class="data-value">
+                                        ${person.emails.slice(0, 2).map(e => `<span class="email-item">${e.address || e}</span>`).join(' ')}
+                                    </span>
+                                </div>
+                            ` : ''}
+
+                            ${person.location_name ? `
+                                <div class="data-row">
+                                    <span class="data-label">Location</span>
+                                    <span class="data-value">${person.location_name}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderPDLIdentify(response) {
+            // PDL Identify returns matched IDs and a confidence score
+            const matches = response.matches || [];
+            const alternates = response.alternates || [];
+
+            if (matches.length === 0 && alternates.length === 0) {
+                return `
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <div>No identity matches found. The Person Identify API returns PDL IDs that can be used for enrichment.</div>
+                    </div>
+                    ${renderRawJson(response)}
+                `;
+            }
+
+            return `
+                ${matches.length > 0 ? `
+                    <div class="data-section">
+                        <h3>✅ Primary Matches (${matches.length})</h3>
+                        ${matches.map(match => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                <div class="data-row">
+                                    <span class="data-label">PDL ID</span>
+                                    <span class="data-value"><code>${match.id || 'N/A'}</code></span>
+                                </div>
+                                ${match.name ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Name</span>
+                                        <span class="data-value"><strong>${match.name}</strong></span>
+                                    </div>
+                                ` : ''}
+                                ${match.linkedin_url ? `
+                                    <div class="data-row">
+                                        <span class="data-label">LinkedIn</span>
+                                        <span class="data-value"><a href="${match.linkedin_url}" target="_blank">View Profile</a></span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${alternates.length > 0 ? `
+                    <div class="data-section">
+                        <h3>🔄 Alternate Matches (${alternates.length})</h3>
+                        ${alternates.map(alt => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                <div class="data-row">
+                                    <span class="data-label">PDL ID</span>
+                                    <span class="data-value"><code>${alt.id || 'N/A'}</code></span>
+                                </div>
+                                ${alt.name ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Name</span>
+                                        <span class="data-value">${alt.name}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <div class="alert alert-info">
+                    <span>ℹ️</span>
+                    <div>Use the returned PDL IDs with the Enrich API to get full person details.</div>
+                </div>
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderEnformionEnrichment(response) {
+            const person = response.Person || (response.Persons && response.Persons[0]);
+            if (!person) return renderError('No person data found');
+
+            const fullName = `${person.FirstName || ''} ${person.MiddleName || ''} ${person.LastName || ''}`.trim() || 'Unknown';
+            const age = person.Age || 'Unknown';
+            const phones = person.PhoneNumbers || [];
+            const emails = person.EmailAddresses || [];
+            const addresses = person.Addresses || [];
+
+            return `
+                <div class="data-section">
+                    <h3>👤 Contact Information</h3>
+                    <div class="data-row">
+                        <span class="data-label">Full Name</span>
+                        <span class="data-value"><strong>${fullName}</strong></span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Age</span>
+                        <span class="data-value">${age}</span>
+                    </div>
+                    ${person.DOB ? `
+                        <div class="data-row">
+                            <span class="data-label">Date of Birth</span>
+                            <span class="data-value">${person.DOB}</span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${phones.length > 0 ? `
+                    <div class="data-section">
+                        <h3>📞 Phone Numbers (${phones.length})</h3>
+                        <div class="phone-list">
+                            ${phones.slice(0, 5).map(p => `
+                                <div class="owner-card" style="margin-bottom: 8px;">
+                                    <span class="tag tag-info">${formatPhone(p.PhoneNumber || p)}</span>
+                                    ${p.Type ? `<span style="color: var(--gray-600); margin-left: 8px;">${p.Type}</span>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${emails.length > 0 ? `
+                    <div class="data-section">
+                        <h3>✉️ Email Addresses (${emails.length})</h3>
+                        <div class="email-list">
+                            ${emails.slice(0, 5).map(e => `
+                                <span class="email-item">${e.EmailAddress || e}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${addresses.length > 0 ? `
+                    <div class="data-section">
+                        <h3>🏠 Addresses (${addresses.length})</h3>
+                        ${addresses.slice(0, 3).map(addr => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                ${addr.AddressLine1 ? `<div>${addr.AddressLine1}</div>` : ''}
+                                ${addr.AddressLine2 ? `<div>${addr.AddressLine2}</div>` : ''}
+                                <div>${[addr.City, addr.State, addr.Zip].filter(Boolean).join(', ')}</div>
+                                ${addr.Type ? `<div style="color: var(--gray-600); font-size: 0.85rem; margin-top: 4px;">${addr.Type}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderEnformionPersonSearch(response) {
+            const persons = response.Persons || response.Results || [];
+            const totalResults = response.TotalResults || persons.length;
+
+            if (persons.length === 0) {
+                return `
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <div>No search results found in Enformion database.</div>
+                    </div>
+                    ${renderRawJson(response)}
+                `;
+            }
+
+            return `
+                <div class="data-section">
+                    <h3>🔍 Person Search Results (${persons.length} of ${totalResults})</h3>
+                    ${persons.map((person, idx) => {
+                        // Handle both uppercase (old) and lowercase (actual API) field names
+                        const name = person.name || {};
+                        const fullName = person.fullName ||
+                                       `${name.firstName || person.FirstName || ''} ${name.middleName || person.MiddleName || ''} ${name.lastName || person.LastName || ''}`.trim() ||
+                                       'Unknown';
+
+                        const phones = person.phoneNumbers || person.PhoneNumbers || [];
+                        const emails = person.emailAddresses || person.EmailAddresses || [];
+                        const addresses = person.addresses || person.Addresses || [];
+                        const akas = person.akas || person.Akas || [];
+                        const age = person.age || person.Age;
+                        const dob = person.dob || person.DOB;
+
+                        return `
+                            <div class="owner-card" style="margin-bottom: 16px;">
+                                <div class="owner-header" style="margin-bottom: 12px;">
+                                    <div>
+                                        <div class="owner-name">${fullName}</div>
+                                        ${age ? `<div style="color: var(--gray-600); font-size: 0.9rem; margin-top: 4px;">Age: ${age}</div>` : ''}
+                                        ${dob ? `<div style="color: var(--gray-600); font-size: 0.85rem;">DOB: ${dob}</div>` : ''}
+                                        ${akas.length > 0 ? `<div style="color: var(--gray-600); font-size: 0.85rem; margin-top: 4px;">AKAs: ${akas.slice(0, 3).map(a => `${a.firstName || ''} ${a.lastName || ''}`.trim()).join(', ')}</div>` : ''}
+                                    </div>
+                                </div>
+
+                                ${phones.length > 0 ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Phones (${phones.length})</span>
+                                        <span class="data-value">
+                                            ${phones.slice(0, 3).map(p => {
+                                                const phoneNum = p.phoneNumber || p.PhoneNumber || p;
+                                                const type = p.phoneType || p.PhoneType || '';
+                                                return `<span class="tag tag-info">${formatPhone(phoneNum)}${type ? ` (${type})` : ''}</span>`;
+                                            }).join(' ')}
+                                            ${phones.length > 3 ? `<span style="color: var(--gray-600); font-size: 0.85rem;">+${phones.length - 3} more</span>` : ''}
+                                        </span>
+                                    </div>
+                                ` : ''}
+
+                                ${emails.length > 0 ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Emails (${emails.length})</span>
+                                        <span class="data-value">
+                                            ${emails.slice(0, 2).map(e => `<span class="email-item">${e.emailAddress || e.EmailAddress || e}</span>`).join(' ')}
+                                            ${emails.length > 2 ? `<span style="color: var(--gray-600); font-size: 0.85rem;">+${emails.length - 2} more</span>` : ''}
+                                        </span>
+                                    </div>
+                                ` : ''}
+
+                                ${addresses.length > 0 && addresses[0] ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Addresses (${addresses.length})</span>
+                                        <span class="data-value">
+                                            ${addresses.slice(0, 2).map(addr => {
+                                                const city = addr.city || addr.City || '';
+                                                const state = addr.state || addr.State || '';
+                                                const zip = addr.zip || addr.Zip || '';
+                                                const fullAddr = addr.fullAddress || [addr.houseNumber, addr.streetName, addr.streetType].filter(Boolean).join(' ');
+                                                return `<div style="margin-bottom: 4px;">${fullAddr ? fullAddr + '; ' : ''}${[city, state, zip].filter(Boolean).join(', ')}</div>`;
+                                            }).join('')}
+                                            ${addresses.length > 2 ? `<div style="color: var(--gray-600); font-size: 0.85rem;">+${addresses.length - 2} more addresses</div>` : ''}
+                                        </span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderEnformionReversePhone(response) {
+            const persons = response.Persons || response.Results || [];
+
+            if (persons.length === 0) {
+                return `
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        <div>No person found associated with this phone number.</div>
+                    </div>
+                    ${renderRawJson(response)}
+                `;
+            }
+
+            const person = persons[0];
+
+            // Handle the transformed structure from reversePhoneRecords
+            const name = person.name || {};
+            const fullName = `${name.firstName || ''} ${name.middleName || ''} ${name.lastName || ''}`.trim() || 'Unknown';
+            const akas = person.akas || [];
+            const addresses = person.addresses || [];
+            const emails = person.emailAddresses || [];
+            const phones = person.phoneNumbers || [];
+
+            // Top-level phone info from the searched number
+            const searchedPhone = person.phoneNumber;
+            const carrier = person.carrier;
+            const phoneType = person.phoneType;
+
+            return `
+                <div class="data-section">
+                    <h3>📱 Reverse Phone Lookup Result</h3>
+                    <div class="data-row">
+                        <span class="data-label">Name</span>
+                        <span class="data-value"><strong>${fullName}</strong></span>
+                    </div>
+                    ${person.age ? `
+                        <div class="data-row">
+                            <span class="data-label">Age</span>
+                            <span class="data-value">${person.age}</span>
+                        </div>
+                    ` : ''}
+                    ${person.dob ? `
+                        <div class="data-row">
+                            <span class="data-label">Date of Birth</span>
+                            <span class="data-value">${person.dob}</span>
+                        </div>
+                    ` : ''}
+                    ${person.gender ? `
+                        <div class="data-row">
+                            <span class="data-label">Gender</span>
+                            <span class="data-value">${person.gender}</span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${searchedPhone ? `
+                    <div class="data-section">
+                        <h3>📞 Searched Phone Information</h3>
+                        <div class="owner-card">
+                            <div class="data-row">
+                                <span class="data-label">Phone Number</span>
+                                <span class="data-value"><strong>${formatPhone(searchedPhone)}</strong></span>
+                            </div>
+                            ${carrier ? `
+                                <div class="data-row">
+                                    <span class="data-label">Carrier</span>
+                                    <span class="data-value">${carrier}</span>
+                                </div>
+                            ` : ''}
+                            ${phoneType ? `
+                                <div class="data-row">
+                                    <span class="data-label">Phone Type</span>
+                                    <span class="data-value">${phoneType}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${akas.length > 0 ? `
+                    <div class="data-section">
+                        <h3>👥 Also Known As (${akas.length})</h3>
+                        <div class="phone-list">
+                            ${akas.slice(0, 5).map(aka => {
+                                const akaName = `${aka.firstName || ''} ${aka.middleName || ''} ${aka.lastName || ''}`.trim();
+                                return `<span class="tag tag-info">${akaName}</span>`;
+                            }).join(' ')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${phones.length > 0 ? `
+                    <div class="data-section">
+                        <h3>📞 All Phone Numbers (${phones.length})</h3>
+                        ${phones.slice(0, 5).map(p => `
+                            <div class="owner-card" style="margin-bottom: 8px;">
+                                <div class="data-row">
+                                    <span class="data-label">Number</span>
+                                    <span class="data-value"><strong>${formatPhone(p.phoneNumber || p)}</strong></span>
+                                </div>
+                                ${p.type ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Type</span>
+                                        <span class="data-value">${p.type}</span>
+                                    </div>
+                                ` : ''}
+                                ${p.carrier ? `
+                                    <div class="data-row">
+                                        <span class="data-label">Carrier</span>
+                                        <span class="data-value">${p.carrier}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${addresses.length > 0 ? `
+                    <div class="data-section">
+                        <h3>🏠 Known Addresses (${addresses.length})</h3>
+                        ${addresses.slice(0, 3).map(addr => `
+                            <div class="owner-card" style="margin-bottom: 12px;">
+                                ${addr.streetAddress ? `<div>${addr.streetAddress}</div>` : ''}
+                                ${addr.city || addr.state || addr.zip ? `
+                                    <div>${[addr.city, addr.state, addr.zip].filter(Boolean).join(', ')}</div>
+                                ` : ''}
+                                ${addr.county ? `<div style="color: var(--gray-600); font-size: 0.85rem;">County: ${addr.county}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                ${emails.length > 0 ? `
+                    <div class="data-section">
+                        <h3>✉️ Email Addresses (${emails.length})</h3>
+                        <div class="email-list">
+                            ${emails.slice(0, 5).map(e => `<span class="email-item">${e.emailAddress || e}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${renderRawJson(response)}
+            `;
+        }
+
+        function renderRawJson(data) {
+            return `
+                <div class="collapsible" onclick="toggleCollapsible(this)">
+                    <div class="collapsible-header">
+                        <h3>📄 Raw JSON Response</h3>
+                        <span class="collapsible-arrow">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="code-block">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========== LEGACY FUNCTIONS (kept for compatibility) ==========
+
         // Format phone number for display
         function formatPhone(phone) {
             if (!phone) return 'Unknown';
@@ -1557,10 +3674,16 @@
             document.getElementById('pdlResults').classList.remove('active');
         }
 
-        // Allow Enter key to submit
-        document.getElementById('phoneNumber').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                makeApiCall();
+        // Allow Enter key to submit unified search
+        const formInputs = ['phoneNumber', 'emailAddress', 'firstName', 'lastName', 'city', 'postalCode', 'company', 'location', 'profileUrl'];
+        formInputs.forEach(inputId => {
+            const element = document.getElementById(inputId);
+            if (element) {
+                element.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        runUnifiedSearch();
+                    }
+                });
             }
         });
     </script>
