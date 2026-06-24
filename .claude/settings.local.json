@@ -8,7 +8,19 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(cat:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(mkdir -p /tmp/design)",
+      "Read(//tmp/**)",
+      "Bash(cp \"C:/Users/HP/.claude/projects/c--Users-HP-Desktop-Projects-Active-Development-TracePoint/caf6acef-a050-4f3c-8798-dfd3a29befe7/tool-results/webfetch-1776543705550-0b3ajl.bin\" design.gz)",
+      "Bash(gunzip -f design.gz)",
+      "Bash(tar -xf design)",
+      "Read(//tmp/design/tracepoint/**)",
+      "Read(//c/tmp/design/tracepoint/**)",
+      "Bash(git -C \"c:/Users/HP/Desktop/Projects/Active/Development/TracePoint\" status)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ],
     "deny": [],
     "ask": []

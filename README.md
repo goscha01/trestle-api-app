@@ -1,6 +1,6 @@
-# trestle-api-app
+# TracePoint
 
-Local demo for TrestleIQ + Twilio Lookup proxy (Vercel serverless functions).
+Identity intelligence aggregator that triangulates Trestle IQ, Twilio Lookup, PeopleDataLabs, and Enformion (Vercel serverless functions).
 
 Quick start
 

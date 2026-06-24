@@ -1,7 +1,7 @@
 {
-  "name": "trestle-api-app",
+  "name": "tracepoint",
   "version": "1.0.0",
-  "description": "TrestleIQ API Demo Application",
+  "description": "TracePoint — identity intelligence aggregator (Trestle IQ, Twilio, PeopleDataLabs, Enformion)",
   "scripts": {
     "start": "vercel dev --listen 3000",
     "deploy": "vercel --prod"
